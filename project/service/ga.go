@@ -13,10 +13,11 @@ import (
 	"time"
 )
 
+//规范文档 https://github.com/google/google-authenticator/wiki/Key-Uri-Format
 type GoogleAuthenticator struct {
-	Secret string //The base32NoPaddingEncodedSecret parameter is an arbitrary key value encoded in Base32 according to RFC 3548. The padding specified in RFC 3548 section 2.2 is not required and should be omitted.
-	Expire uint64 //更新周期单位秒
-	Digits int    //数字数量
+	Secret string
+	Expire uint64
+	Digits int
 }
 
 func (m *GoogleAuthenticator) GaCode() (code string, err error) {
@@ -27,15 +28,14 @@ func (m *GoogleAuthenticator) GaCode() (code string, err error) {
 		return
 	}
 	codeInt := hotp(key, count, m.Digits)
-	intFormat := fmt.Sprintf("%%0%dd", m.Digits) //数字长度补零
+	intFormat := fmt.Sprintf("%%0%dd", m.Digits)
 	return fmt.Sprintf(intFormat, codeInt), nil
 }
 
-//QrString google authenticator 扫描二维码的二维码字符串
 func (m *GoogleAuthenticator) QrUrl(label, user string) (qr string) {
 	m.CreateSecret(user)
-	flabel := url.QueryEscape(label) //有一些小程序MFA不支持
-	//规范文档 https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+	flabel := url.QueryEscape(label)
+
 	//otpauth://totp/ACME%20Co:john.doe@email.com?secret=HXDMVJECJJWSRB3HWIZR4IFUGFTMXBOZ&issuer=ACME%20Co&algorithm=SHA1&digits=6&period=30
 	qr = fmt.Sprintf(`otpauth://totp/%s?secret=%s&issuer=%s&algorithm=SHA1&digits=%d&period=%d`, user, m.Secret, flabel, m.Digits, m.Expire)
 	return
@@ -62,20 +62,12 @@ func NewGoogleAuthenticator(key string) *GoogleAuthenticator {
 }
 
 func hotp(key []byte, counter uint64, digits int) int {
-	//RFC 6238
 	//只支持sha1
 	h := hmac.New(sha1.New, key)
 	binary.Write(h, binary.BigEndian, counter)
 	sum := h.Sum(nil)
-	//取sha1的最后4byte
-	//0x7FFFFFFF 是long int的最大值
-	//math.MaxUint32 == 2^32-1
-	//& 0x7FFFFFFF == 2^31  Set the first bit of truncatedHash to zero  //remove the most significant bit
-	// len(sum)-1]&0x0F 最后 像登陆 (bytes.len-4)
-	//取sha1 bytes的最后4byte 转换成 uint32
 	v := binary.BigEndian.Uint32(sum[sum[len(sum)-1]&0x0F:]) & 0x7FFFFFFF
 	d := uint32(1)
-	//取十进制的余数
 	for i := 0; i < digits && i < 8; i++ {
 		d *= 10
 	}
