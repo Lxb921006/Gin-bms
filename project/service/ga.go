@@ -14,6 +14,7 @@ import (
 )
 
 //规范文档 https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+//
 type GoogleAuthenticator struct {
 	Secret string
 	Expire uint64
