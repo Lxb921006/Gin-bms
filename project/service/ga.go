@@ -13,8 +13,8 @@ import (
 	"time"
 )
 
-//规范文档 https://github.com/google/google-authenticator/wiki/Key-Uri-Format
-//
+//请查看规范文档 https://github.com/google/google-authenticator/wiki/Key-Uri-Format
+
 type GoogleAuthenticator struct {
 	Secret string
 	Expire uint64
