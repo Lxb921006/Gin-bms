@@ -20,4 +20,4 @@
 # Go workspace file
 project/.DS_Store
 .DS_Store
-.gitignore
+project/config/dbConfig.go
