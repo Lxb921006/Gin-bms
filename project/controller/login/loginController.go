@@ -64,17 +64,6 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	user := lf.UserName
-	ip := ctx.RemoteIP()
-	url := ctx.Request.URL.Path
-	op := model.OperateLog{}
-	if err := op.AddOperateLog(url, user, ip); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":    data,
 		"message": fmt.Sprintf("欢迎%s大佬!!!", lf.UserName),
@@ -93,16 +82,6 @@ func Logout(ctx *gin.Context) {
 	}
 
 	if err := l.UserLogout(user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
-		})
-		return
-	}
-
-	ip := ctx.RemoteIP()
-	url := ctx.Request.URL.Path
-	op := model.OperateLog{}
-	if err := op.AddOperateLog(url, user, ip); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 		})

@@ -121,14 +121,18 @@ func Visitlimit() gin.HandlerFunc {
 func OperateRecord() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		url := ctx.Request.URL.Path
+		op := model.OperateLog{}
 		if service.W.OperateWhileList(url) {
+			if url == "/login" || url == "/logout" || url == "/galogin" {
+				if err := op.AddOperateLog(ctx); err != nil {
+					ctx.Abort()
+				}
+			}
 			ctx.Next()
 			return
 		}
-		user := ctx.Query("user")
-		ip := ctx.RemoteIP()
-		op := model.OperateLog{}
-		if err := op.AddOperateLog(url, user, ip); err != nil {
+
+		if err := op.AddOperateLog(ctx); err != nil {
 			ctx.Abort()
 		}
 	}

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Lxb921006/Gin-bms/project/dao"
 	"github.com/Lxb921006/Gin-bms/project/service"
+	"github.com/gin-gonic/gin"
 
 	"gorm.io/gorm"
 )
@@ -54,10 +55,10 @@ func (o *OperateLog) OperateLogListByDate(page int, op OperateLog) (data *servic
 	return
 }
 
-func (o *OperateLog) AddOperateLog(info ...string) (err error) {
-	o.Url = info[0]
-	o.Operator = info[1]
-	o.Ip = info[2]
+func (o *OperateLog) AddOperateLog(ctx *gin.Context) (err error) {
+	o.Url = ctx.Request.URL.Path
+	o.Operator = ctx.Query("user")
+	o.Ip = ctx.RemoteIP()
 
 	if err = dao.DB.Create(o).Error; err != nil {
 		return
