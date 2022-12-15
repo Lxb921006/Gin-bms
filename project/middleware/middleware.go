@@ -123,11 +123,6 @@ func OperateRecord() gin.HandlerFunc {
 		url := ctx.Request.URL.Path
 		op := model.OperateLog{}
 		if service.W.OperateWhileList(url) {
-			if url == "/login" || url == "/logout" || url == "/galogin" {
-				if err := op.AddOperateLog(ctx); err != nil {
-					ctx.Abort()
-				}
-			}
 			ctx.Next()
 			return
 		}

@@ -37,9 +37,9 @@ func (WhileUrls) OperateWhileList(url string) bool {
 		"/role/rolesname",
 		"/role/userperms",
 		"/user/getinfobyname",
-		"/login",
-		"/logout",
-		"/galogin",
+		// "/login",
+		// "/logout",
+		// "/galogin",
 	}
 
 	for i := 0; i < len(wls); i++ {
