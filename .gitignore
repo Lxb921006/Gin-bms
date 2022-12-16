@@ -17,6 +17,9 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+main
+
+webServer
 # Go workspace file
 project/.DS_Store
 .DS_Store
