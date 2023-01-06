@@ -18,7 +18,7 @@
 # vendor/
 
 main
-
+Config.*
 webServer
 # Go workspace file
 project/.DS_Store
