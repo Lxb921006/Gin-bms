@@ -122,14 +122,6 @@ func (u *Role) GetRolesList(page int, rolename Role) (data *service.Paginate, er
 		return
 	}
 
-	// for _, v := range rs {
-	// 	p, _ := u.GetRolePerms(v.ID)
-	// 	m := u.FormatUserPerms(p, 0)
-	// 	v.Mm = m
-	// 	frs = append(frs, v)
-	// 	dao.DB.Save(&v)
-	// }
-
 	for i := 0; i < len(rs); i++ {
 		p, _ := u.GetRolePerms(rs[i].ID)
 		m := u.FormatUserPerms(p, 0)

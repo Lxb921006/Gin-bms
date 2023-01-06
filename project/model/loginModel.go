@@ -35,7 +35,7 @@ func (l *Login) GaLogin(code, user string) (ui *Login, err error) {
 		return
 	}
 
-	//扫描User表填充到Login
+	//扫描User表填充到Login表
 	if err = l.FillData(user); err != nil {
 		return
 	}

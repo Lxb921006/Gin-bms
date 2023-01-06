@@ -53,7 +53,6 @@ func NewRedisDb(pool *redis.Client, md map[string]Md) *RedisDb {
 func (r *RedisDb) RquestVerify(user, token string) (err error) {
 	getToken, err := r.pool.Get(user).Result()
 	if err != nil {
-		err = errors.New("token已失效, 请重新登录")
 		return
 	}
 

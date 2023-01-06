@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -42,9 +41,9 @@ func NewValidateData(v *validator.Validate) *ValidateData {
 	}
 }
 
-func RegisterValidator() {
-	var vd ValidateData
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("ValidatorNumber", vd.ValidatorNumber)
-	}
-}
+// func RegisterValidator() {
+// 	var vd ValidateData
+// 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+// 		v.RegisterValidation("ValidatorNumber", vd.ValidatorNumber)
+// 	}
+// }
