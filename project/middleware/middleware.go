@@ -7,12 +7,10 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"github.com/Lxb921006/Gin-bms/project/service"
 
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 )
 
-//允许跨域访问
+// 允许跨域访问
 func AllowCos() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
@@ -98,8 +96,8 @@ func PermsVerify() gin.HandlerFunc {
 		if pass {
 			ctx.Next()
 		} else {
-			ctx.JSON(http.StatusBadGateway, gin.H{
-				"message": fmt.Sprintf("您没有权限访问%s, 或者当前地址不存在", url),
+			ctx.JSON(http.StatusForbidden, gin.H{
+				"message": "您没有权限操作!",
 			})
 			ctx.Abort()
 		}
