@@ -16,6 +16,7 @@ func OperateLogList(ctx *gin.Context) {
 	if err := ctx.ShouldBindQuery(&od); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    20001,
 		})
 		return
 	}
@@ -23,8 +24,9 @@ func OperateLogList(ctx *gin.Context) {
 	validate := validator.New()
 	vd := NewValidateData(validate)
 	if err := od.PaginateLogic(u, vd); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    20002,
 		})
 		return
 	}
@@ -33,5 +35,6 @@ func OperateLogList(ctx *gin.Context) {
 		"data":     od.PageData.ModelSlice,
 		"total":    od.PageData.Total,
 		"pageSize": od.PageData.PageSize,
+		"code":     10000,
 	})
 }

@@ -47,6 +47,7 @@ func AddUser(ctx *gin.Context) {
 	if err := ctx.ShouldBind(&ud); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    60001,
 		})
 		return
 	}
@@ -54,8 +55,9 @@ func AddUser(ctx *gin.Context) {
 	validate := validator.New()
 	vd := NewValidateData(validate)
 	if err := vd.ValidateStruct(ud); err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": fmt.Sprintf("添加%v失败, errMsg=%v", ud.Name, err.Error()),
+			"code":    60002,
 		})
 		return
 	}
@@ -68,14 +70,16 @@ func AddUser(ctx *gin.Context) {
 	u.Password = ud.Password
 
 	if err := u.AddUser(u, ud.RoleId); err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": fmt.Sprintf("添加%v失败, errMsg=%v", ud.Name, err.Error()),
+			"code":    60003,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("添加%v成功", ud.Name),
+		"code":    10000,
 	})
 
 }
@@ -86,19 +90,22 @@ func DeleteUser(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&ud); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    60004,
 		})
 		return
 	}
 
 	if err := u.DeleteUser(ud.Uid); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    60005,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("%v删除成功", ud.Uid),
+		"code":    10000,
 	})
 
 }
@@ -110,13 +117,15 @@ func UpdateUser(ctx *gin.Context) {
 	if e := ctx.ShouldBind(&ud); e != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": e.Error(),
+			"code":    60006,
 		})
 		return
 	}
 
 	if ud.Password != ud.RePassword {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": "密码不一致",
+			"code":    60007,
 		})
 		return
 	}
@@ -127,14 +136,16 @@ func UpdateUser(ctx *gin.Context) {
 	u.ID = ud.Uid
 
 	if err := u.UpdateUser(u, ud.Rid); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": fmt.Sprintf("更新%v失败, errMsg=%v", ud.Name, err.Error()),
+			"code":    60008,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("更新%v成功", ud.Name),
+		"code":    10000,
 	})
 
 }
@@ -144,7 +155,8 @@ func GetUserByName(ctx *gin.Context) {
 	var guf GetUserByNameQuery
 	if e := ctx.ShouldBindQuery(&guf); e != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": "非法请求",
+			"message": e.Error(),
+			"code":    60009,
 		})
 		return
 	}
@@ -153,10 +165,12 @@ func GetUserByName(ctx *gin.Context) {
 	if e != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": e.Error(),
+			"code":    60010,
 		})
 	} else {
 		ctx.JSON(http.StatusOK, gin.H{
 			"data": r,
+			"code": 10000,
 		})
 	}
 
@@ -168,6 +182,7 @@ func GetUsersByPaginate(ctx *gin.Context) {
 	if err := ctx.ShouldBindQuery(&pd); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    60011,
 		})
 		return
 	}
@@ -175,8 +190,9 @@ func GetUsersByPaginate(ctx *gin.Context) {
 	validate := validator.New()
 	vd := NewValidateData(validate)
 	if err := pd.PaginateLogic(u, vd); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    60012,
 		})
 		return
 	}
@@ -185,6 +201,7 @@ func GetUsersByPaginate(ctx *gin.Context) {
 		"data":     pd.PageData.ModelSlice,
 		"total":    pd.PageData.Total,
 		"pageSize": pd.PageData.PageSize,
+		"code":     10000,
 	})
 
 }

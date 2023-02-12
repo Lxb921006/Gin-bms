@@ -47,6 +47,7 @@ func CreateRole(ctx *gin.Context) {
 	if err := ctx.ShouldBindWith(&cr, binding.Form); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50001,
 		})
 		return
 	}
@@ -54,14 +55,16 @@ func CreateRole(ctx *gin.Context) {
 	r.RoleName = cr.RoleName
 
 	if err := r.CreateRole(r); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": fmt.Sprintf("[%s] 创建失败, errMsg: %s", cr.RoleName, err.Error()),
+			"code":    50002,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("[%s] 创建成功", cr.RoleName),
+		"code":    10000,
 	})
 }
 
@@ -72,19 +75,22 @@ func DeleteRoles(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&dr); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50003,
 		})
 		return
 	}
 
 	if err := r.DeleteRole(dr.Rid); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50004,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("%v删除成功", dr.Rid),
+		"code":    10000,
 	})
 }
 
@@ -92,14 +98,16 @@ func GetRolesInfo(ctx *gin.Context) {
 	var r model.Role
 	data, err := r.GetAllRoles()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50005,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": data,
+		"code": 10000,
 	})
 }
 
@@ -109,19 +117,22 @@ func AllotPermsToRole(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&ap); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50006,
 		})
 		return
 	}
 
 	if err := role.UpdateUserPerms(ap.Pid, ap.Rid); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50007,
 		})
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("[%s]添加权限pid为:%v的成功", ap.RoleName, ap.Pid),
+		"code":    10000,
 	})
 }
 
@@ -132,14 +143,16 @@ func RemoveRolePerms(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&rp); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50008,
 		})
 		return
 	}
 
 	data, err := r.RemovePerms(rp.Rid, rp.Pid)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50009,
 		})
 		return
 	}
@@ -149,6 +162,7 @@ func RemoveRolePerms(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": fmt.Sprintf("[%s]移除权限pid为:%v成功", rp.RoleName, rp.Pid),
 		"data":    mp,
+		"code":    10000,
 	})
 }
 
@@ -158,6 +172,7 @@ func GetRolesList(ctx *gin.Context) {
 	if err := ctx.ShouldBindQuery(&rp); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50010,
 		})
 		return
 	}
@@ -170,8 +185,9 @@ func GetRolesList(ctx *gin.Context) {
 
 	data, err := r.GetRolesList(rp.Page, r)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50011,
 		})
 		return
 	}
@@ -180,6 +196,7 @@ func GetRolesList(ctx *gin.Context) {
 		"data":     data.ModelSlice,
 		"total":    data.Total,
 		"pageSize": data.PageSize,
+		"code":     10000,
 	})
 }
 
@@ -190,14 +207,16 @@ func GetUserPerms(ctx *gin.Context) {
 	if err := ctx.ShouldBindQuery(&up); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50012,
 		})
 		return
 	}
 
 	data, err := r.GetUserPerms(up.Uid)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50013,
 		})
 		return
 	}
@@ -213,6 +232,7 @@ func GetUserPerms(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": fdata,
+		"code": 10000,
 	})
 }
 
@@ -224,14 +244,16 @@ func GetRolePerms(ctx *gin.Context) {
 	if err := ctx.ShouldBindQuery(&up); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
+			"code":    50014,
 		})
 		return
 	}
 
 	data, err := r.GetRolePerms(up.Rid)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50015,
 		})
 		return
 	}
@@ -250,6 +272,7 @@ func GetRolePerms(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":    fdata,
 		"pidList": pidList,
+		"code":    10000,
 	})
 }
 
@@ -257,8 +280,9 @@ func GetAllFormatPerms(ctx *gin.Context) {
 	var r model.Role
 	data, err := r.GetAllFormatPerms()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
+			"code":    50016,
 		})
 		return
 	}
@@ -274,5 +298,6 @@ func GetAllFormatPerms(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": fdata,
+		"code": 10000,
 	})
 }
