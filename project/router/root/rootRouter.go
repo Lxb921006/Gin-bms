@@ -15,6 +15,7 @@ import (
 )
 
 func SetupRouter() *http.Server {
+	// gin.SetMode(gin.ReleaseMode) 正式生产环境需切换到Release模式，测试是debug模式
 	router := gin.Default()
 	router.Static("/static", "../static")
 	// router.LoadHTMLGlob("../../templates")
