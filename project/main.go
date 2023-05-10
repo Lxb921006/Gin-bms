@@ -18,7 +18,7 @@ func main() {
 	}
 
 	//初始化redis连接池
-	dao.InitPoolRds(config.RedisConAddre, config.RedisUserDb)
+	dao.InitPoolRds(config.RedisConAddre, config.RedisPwd, config.RedisUserDb)
 	if dao.RdPool == nil {
 		log.Fatalf(dao.ErrorRedisConnectFailed.Error())
 		return
@@ -30,5 +30,9 @@ func main() {
 
 	//初始化gin并启动
 	t := root.SetupRouter()
-	t.ListenAndServe()
+	err = t.ListenAndServe()
+	if err != nil {
+		log.Fatalf(err.Error())
+		return
+	}
 }

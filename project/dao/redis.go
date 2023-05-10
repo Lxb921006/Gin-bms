@@ -11,18 +11,19 @@ import (
 	"github.com/go-redis/redis"
 )
 
-//把关于redis的处理都放这里了,想不到好的位置放
+// 把关于redis的处理都放这里了,想不到好的位置放
 var (
 	RdPool *redis.Client
 	Rds    *RedisDb
 	lock   sync.Mutex
 )
 
-//初始化redis连接池
-func InitPoolRds(addr string, db int) {
+// 初始化redis连接池
+func InitPoolRds(addr, pwd string, db int) {
 	RdPool = redis.NewClient(&redis.Options{
 		Addr:         addr,
 		DB:           db,
+		Password:     pwd,
 		MinIdleConns: 5,
 		PoolSize:     30,
 		PoolTimeout:  30 * time.Second,
@@ -98,7 +99,7 @@ func (r *RedisDb) ClearToken(user string) (err error) {
 	return
 }
 
-//很简单很简单的限流功能，每秒只能接收5次访问，超过5次返回502并需要等待10秒后才能访问
+// 很简单很简单的限流功能，每秒只能接收5次访问，超过5次返回502并需要等待10秒后才能访问
 func (r *RedisDb) Visitlimit(host string) (err error) {
 	lock.Lock()
 	defer lock.Unlock()
