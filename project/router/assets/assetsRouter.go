@@ -9,6 +9,6 @@ func AssetsRouter(r *gin.Engine) {
 	//r.GET("/ws", ac.ProcessWs)
 	assets := r.Group("/assets")
 	{
-		assets.GET("/wss", ac.ProcessWs)
+		assets.GET("/ws", ac.ProcessWs)
 	}
 }
