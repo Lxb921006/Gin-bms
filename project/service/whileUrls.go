@@ -12,6 +12,7 @@ func (WhileUrls) WhileList(url string) bool {
 		"/login",
 		"/logout",
 		"/galogin",
+		"/assets/ws",
 	}
 
 	for i := 0; i < len(wls); i++ {

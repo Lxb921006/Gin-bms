@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Lxb921006/Gin-bms/project/middleware"
+	"github.com/Lxb921006/Gin-bms/project/router/assets"
 	"github.com/Lxb921006/Gin-bms/project/router/login"
 	"github.com/Lxb921006/Gin-bms/project/router/operate"
 	"github.com/Lxb921006/Gin-bms/project/router/perms"
@@ -27,6 +28,7 @@ func SetupRouter() *http.Server {
 	perms.PermsRouter(router)
 	login.LoginRouter(router)
 	operate.OperateRouter(router)
+	assets.AssetsRouter(router)
 
 	t := &http.Server{
 		Addr:           ":9293",
