@@ -2,11 +2,10 @@ package assets
 
 import (
 	"fmt"
+	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"log"
 	"net/http"
-	"time"
 )
 
 var upGrader = websocket.Upgrader{
@@ -26,28 +25,37 @@ func ProcessWs(ctx *gin.Context) {
 
 	defer conn.Close()
 
-	messageType, message, err := conn.ReadMessage()
-	if err != nil {
-		log.Println("Error during message reading:", err)
+	ws := service.NewWs(conn)
+
+	if err = ws.Run(); err != nil {
+		if err = ws.Conn.WriteMessage(1, []byte(fmt.Sprintf("%s", err.Error()))); err != nil {
+			return
+		}
 		return
 	}
-	log.Printf("Received: %s", message)
 
-	Process(conn, messageType)
+	//messageType, message, err := conn.ReadMessage()
+	//if err != nil {
+	//	log.Println("Error during message reading:", err)
+	//	return
+	//}
+	//log.Printf("Received: %s", message)
+	//
+	//Process(conn, messageType)
 
 }
 
-func Process(conn *websocket.Conn, messageType int) {
-	count := 0
-	for {
-		count++
-		text := fmt.Sprintf("The server has received websocket data %d!\n", count)
-		err := conn.WriteMessage(messageType, []byte(text))
-		if err != nil {
-			log.Println("Error during message writing >>>", err)
-			break
-		}
-
-		time.Sleep(time.Second / 5)
-	}
-}
+//func Process(conn *websocket.Conn, messageType int) {
+//	count := 0
+//	for {
+//		count++
+//		text := fmt.Sprintf("The server has received websocket data %d!\n", count)
+//		err := conn.WriteMessage(messageType, []byte(text))
+//		if err != nil {
+//			log.Println("Error during message writing >>>", err)
+//			break
+//		}
+//
+//		time.Sleep(time.Second / 5)
+//	}
+//}
