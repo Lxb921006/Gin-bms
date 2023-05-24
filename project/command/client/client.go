@@ -23,7 +23,7 @@ func (rc *RpcClient) Send() (err error) {
 			return err
 		}
 	case "javaUpdate":
-		if err = rc.DockerUpdate(); err != nil {
+		if err = rc.JavaUpdate(); err != nil {
 			return err
 		}
 	default:
@@ -36,6 +36,27 @@ func (rc *RpcClient) Send() (err error) {
 func (rc *RpcClient) DockerUpdate() (err error) {
 	c := pb.NewStreamUpdateProcessServiceClient(rc.RpcConn)
 	stream, err := c.DockerUpdate(context.Background(), &pb.StreamRequest{})
+	if err != nil {
+		return
+	}
+
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
+			return err
+		}
+	}
+
+	return
+}
+
+func (rc *RpcClient) JavaUpdate() (err error) {
+	c := pb.NewStreamUpdateProcessServiceClient(rc.RpcConn)
+	stream, err := c.JavaUpdate(context.Background(), &pb.StreamRequest{})
 	if err != nil {
 		return
 	}
