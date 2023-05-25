@@ -18,7 +18,7 @@ func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProce
 
 	log.Println("rev run DockerUpdate")
 
-	cmd := exec.Command("sh", "/root/shellscript/test.sh")
+	cmd := exec.Command("sh", "/root/shellscript/DockerUpdate.sh", "|", "tee", "/root/shellscript/DockerUpdate.log")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return
@@ -45,7 +45,7 @@ func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProce
 func (s *server) JavaUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_JavaUpdateServer) (err error) {
 	log.Println("rev run JavaUpdate")
 
-	cmd := exec.Command("sh", "/root/shellscript/test2.sh")
+	cmd := exec.Command("sh", "/root/shellscript/JavaUpdate.sh", "|", "tee", "/root/shellscript/JavaUpdate.log")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return

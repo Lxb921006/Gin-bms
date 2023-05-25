@@ -19,9 +19,8 @@ type Ws struct {
 func (ws *Ws) Run() (err error) {
 	_, message, err := ws.Conn.ReadMessage()
 
-	log.Println(string(message))
-
 	if err != nil {
+		log.Println(err)
 		return
 	}
 

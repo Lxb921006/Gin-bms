@@ -34,28 +34,4 @@ func ProcessWs(ctx *gin.Context) {
 		return
 	}
 
-	//messageType, message, err := conn.ReadMessage()
-	//if err != nil {
-	//	log.Println("Error during message reading:", err)
-	//	return
-	//}
-	//log.Printf("Received: %s", message)
-	//
-	//Process(conn, messageType)
-
 }
-
-//func Process(conn *websocket.Conn, messageType int) {
-//	count := 0
-//	for {
-//		count++
-//		text := fmt.Sprintf("The server has received websocket data %d!\n", count)
-//		err := conn.WriteMessage(messageType, []byte(text))
-//		if err != nil {
-//			log.Println("Error during message writing >>>", err)
-//			break
-//		}
-//
-//		time.Sleep(time.Second / 5)
-//	}
-//}
