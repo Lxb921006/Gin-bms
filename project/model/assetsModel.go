@@ -10,6 +10,7 @@ import (
 type AssetsModel struct {
 	gorm.Model
 	Ip       string    `json:"ip" gorm:"not null"`
+	Project  string    `json:"project" gorm:"not null"`
 	Status   string    `json:"status" gorm:"not null"`
 	Operator string    `json:"operator" gorm:"not null"`
 	Start    time.Time `json:"start" gorm:"-"`
