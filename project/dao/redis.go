@@ -154,3 +154,22 @@ func (r *RedisDb) HashToken(user string) string {
 	nnd := hex.EncodeToString(nd)
 	return nnd
 }
+
+func (r *RedisDb) GetProcessStatus() (sm map[string]string, err error) {
+	sm["running"], err = r.pool.HGet("prcessstatus", "running").Result()
+	if err != nil {
+		return
+	}
+
+	sm["finished"], err = r.pool.HGet("prcessstatus", "finished").Result()
+	if err != nil {
+		return
+	}
+
+	sm["failed"], err = r.pool.HGet("prcessstatus", "failed").Result()
+	if err != nil {
+		return
+	}
+
+	return
+}

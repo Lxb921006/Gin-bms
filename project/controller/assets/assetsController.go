@@ -33,5 +33,8 @@ func ProcessWs(ctx *gin.Context) {
 		}
 		return
 	}
+}
+
+func GetMissionStatus(ctx *gin.Context) {
 
 }
