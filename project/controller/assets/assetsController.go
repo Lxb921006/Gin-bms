@@ -36,5 +36,19 @@ func ProcessWs(ctx *gin.Context) {
 }
 
 func GetMissionStatus(ctx *gin.Context) {
+	var ps ProcessStatusForm
+	data, err := ps.Get(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
 
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": data,
+		"code": 10000,
+	})
 }

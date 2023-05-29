@@ -156,20 +156,29 @@ func (r *RedisDb) HashToken(user string) string {
 }
 
 func (r *RedisDb) GetProcessStatus() (sm map[string]string, err error) {
-	sm["running"], err = r.pool.HGet("prcessstatus", "running").Result()
+	var data = make(map[string]string, 0)
+
+	running, err := r.pool.HGet("prcessstatus", "running").Result()
+	if err != nil {
+		r.pool.HGet("prcessstatus", "running")
+		return
+	}
+
+	finished, err := r.pool.HGet("prcessstatus", "finished").Result()
 	if err != nil {
 		return
 	}
 
-	sm["finished"], err = r.pool.HGet("prcessstatus", "finished").Result()
+	failed, err := r.pool.HGet("prcessstatus", "failed").Result()
 	if err != nil {
 		return
 	}
 
-	sm["failed"], err = r.pool.HGet("prcessstatus", "failed").Result()
-	if err != nil {
-		return
-	}
+	data["running"] = running
+	data["finished"] = finished
+	data["failed"] = failed
+
+	sm = data
 
 	return
 }
