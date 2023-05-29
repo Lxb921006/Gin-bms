@@ -52,3 +52,11 @@ func GetMissionStatus(ctx *gin.Context) {
 		"code": 10000,
 	})
 }
+
+func AddAssets(ctx *gin.Context) {
+
+}
+
+func CreateUpdateProcess(ctx *gin.Context) {
+
+}
