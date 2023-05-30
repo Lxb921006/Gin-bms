@@ -18,7 +18,7 @@ func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProce
 
 	log.Println("rev run DockerUpdate")
 
-	cmd := exec.Command("sh", "/root/shellscript/DockerUpdate.sh", "|", "tee", "/root/shellscript/DockerUpdate.log")
+	cmd := exec.Command("sh", "/root/shellscript/DockerUpdate.sh")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		return

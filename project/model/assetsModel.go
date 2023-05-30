@@ -17,7 +17,7 @@ type AssetsModel struct {
 	End      time.Time `json:"end" gorm:"-"`
 }
 
-func (o *AssetsModel) AssetsList(page int, am AssetsModel) (data *service.Paginate, err error) {
+func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, err error) {
 	var os []AssetsModel
 	sql := dao.DB.Model(os).Or(am)
 	pg := service.NewPaginate()
@@ -33,4 +33,21 @@ func (o *AssetsModel) AssetsList(page int, am AssetsModel) (data *service.Pagina
 	data.ModelSlice = os
 
 	return
+}
+
+func (o *AssetsModel) Del(pid []int32) (err error) {
+	tx := dao.DB.Begin()
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err = tx.Where("id IN ?", pid).Delete(o).Error; err != nil {
+		tx.Rollback()
+		return
+	}
+
+	return tx.Commit().Error
 }

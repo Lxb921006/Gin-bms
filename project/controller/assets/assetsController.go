@@ -58,5 +58,17 @@ func AddAssets(ctx *gin.Context) {
 }
 
 func CreateUpdateProcess(ctx *gin.Context) {
+	var create CreateProcessUpdateForm
+	if err := create.Create(ctx); err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10002,
+		})
+		return
+	}
 
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"code":    10000,
+	})
 }
