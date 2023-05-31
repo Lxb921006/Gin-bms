@@ -1,11 +1,13 @@
 package assets
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Lxb921006/Gin-bms/project/command/client"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"time"
 )
 
 type AssetsProcessRunForm struct {
@@ -26,8 +28,6 @@ func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
 		if err != nil {
 			apf.Err <- err
 			return
-		} else {
-			apf.Err <- nil
 		}
 
 		cn := client.NewRpcClient(apf.UpdateName, apf.Uuid, nil, conn)
@@ -42,6 +42,8 @@ func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
 		select {
 		case err = <-apf.Err:
 			return
+		case <-time.After(time.Duration(2) * time.Second):
+			return errors.New("connect timeout")
 		default:
 		}
 	}

@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"io"
+	"log"
 )
 
 type RpcClient struct {
@@ -46,6 +47,8 @@ func (rc *RpcClient) DockerUpdate() (err error) {
 		if err == io.EOF {
 			break
 		}
+
+		log.Println(resp.Message)
 
 		if rc.WsConn != nil {
 			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
