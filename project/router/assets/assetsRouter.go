@@ -11,5 +11,6 @@ func AssetsRouter(r *gin.Engine) {
 		assets.GET("/ws", ac.ProcessWs)
 		assets.GET("/process/status", ac.GetMissionStatus)
 		assets.POST("/process/update/create", ac.CreateUpdateProcess)
+		assets.POST("/api", ac.ProcessApi)
 	}
 }

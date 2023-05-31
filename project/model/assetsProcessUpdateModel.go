@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/Lxb921006/Gin-bms/project/dao"
+	"github.com/Lxb921006/Gin-bms/project/service"
 	"gorm.io/gorm"
 	"time"
 )
@@ -14,9 +15,28 @@ type AssetsProcessUpdateRecordModel struct {
 	Project    string    `form:"project" json:"project" gorm:"not null" binding:"required"`
 	Operator   string    `form:"operator" json:"operator" gorm:"not null" binding:"required"`
 	Progress   int32     `form:"progress,omitempty" json:"progress" gorm:"default:0;nullable"`
+	Status     int32     `form:"status,omitempty" json:"status" gorm:"default:400;comment:200-success,300-failed,400-running;nullable"`
 	CostTime   int32     `form:"cost_time,omitempty" json:"cost_time" gorm:"default:0;nullable"`
 	Start      time.Time `form:"start,omitempty" json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
 	End        time.Time `form:"end,omitempty" json:"end" gorm:"default:CURRENT_TIMESTAMP;nullable"`
+}
+
+func (pur *AssetsProcessUpdateRecordModel) List(page int, am AssetsProcessUpdateRecordModel) (data *service.Paginate, err error) {
+	var os []AssetsProcessUpdateRecordModel
+	sql := dao.DB.Model(os).Or(am)
+	pg := service.NewPaginate()
+	data, err = pg.GetPageData(page, sql)
+	if err != nil {
+		return
+	}
+
+	if err = data.Gd.Find(&os).Error; err != nil {
+		return
+	}
+
+	data.ModelSlice = os
+
+	return
 }
 
 func (pur *AssetsProcessUpdateRecordModel) Create(data AssetsProcessUpdateRecordModel) (err error) {

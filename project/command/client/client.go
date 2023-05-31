@@ -5,13 +5,14 @@ import (
 	"errors"
 	"fmt"
 	pb "github.com/Lxb921006/Gin-bms/project/command/command"
+	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"io"
 )
-import "github.com/gorilla/websocket"
 
 type RpcClient struct {
 	Name    string
+	Uuid    string
 	RpcConn *grpc.ClientConn
 	WsConn  *websocket.Conn
 }
@@ -35,7 +36,7 @@ func (rc *RpcClient) Send() (err error) {
 
 func (rc *RpcClient) DockerUpdate() (err error) {
 	c := pb.NewStreamUpdateProcessServiceClient(rc.RpcConn)
-	stream, err := c.DockerUpdate(context.Background(), &pb.StreamRequest{})
+	stream, err := c.DockerUpdate(context.Background(), &pb.StreamRequest{Uuid: rc.Uuid})
 	if err != nil {
 		return
 	}
@@ -46,8 +47,10 @@ func (rc *RpcClient) DockerUpdate() (err error) {
 			break
 		}
 
-		if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
-			return err
+		if rc.WsConn != nil {
+			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -67,17 +70,21 @@ func (rc *RpcClient) JavaUpdate() (err error) {
 			break
 		}
 
-		if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
-			return err
+		if rc.WsConn != nil {
+			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
+				return err
+			}
 		}
+
 	}
 
 	return
 }
 
-func NewRpcClient(name string, ws *websocket.Conn, rc *grpc.ClientConn) *RpcClient {
+func NewRpcClient(name, uuid string, ws *websocket.Conn, rc *grpc.ClientConn) *RpcClient {
 	return &RpcClient{
 		Name:    name,
+		Uuid:    uuid,
 		WsConn:  ws,
 		RpcConn: rc,
 	}

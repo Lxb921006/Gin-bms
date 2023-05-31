@@ -14,6 +14,7 @@ type Ws struct {
 	Conn        *websocket.Conn `json:"-"`
 	Ip          string          `json:"ip"`
 	ProcessName string          `json:"name"`
+	Uuid        string          `json:"uuid"`
 }
 
 func (ws *Ws) Run() (err error) {
@@ -42,7 +43,7 @@ func (ws *Ws) Send() (err error) {
 		return
 	}
 
-	cn := client.NewRpcClient(ws.ProcessName, ws.Conn, conn)
+	cn := client.NewRpcClient(ws.ProcessName, ws.Uuid, ws.Conn, conn)
 	if err = cn.Send(); err != nil {
 		return err
 	}

@@ -13,6 +13,7 @@ func (WhileUrls) WhileList(url string) bool {
 		"/logout",
 		"/galogin",
 		"/assets/ws",
+		"/assets/api",
 		"/assets/process/status",
 		"/assets/process/update/create",
 	}
@@ -41,6 +42,7 @@ func (WhileUrls) OperateWhileList(url string) bool {
 		"/role/userperms",
 		"/user/getinfobyname",
 		"/assets/ws",
+		"/assets/api",
 		"/assets/process/status",
 		"/assets/process/update/create",
 		// "/login",
