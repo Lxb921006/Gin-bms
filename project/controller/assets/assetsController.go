@@ -51,6 +51,7 @@ func ProcessApi(ctx *gin.Context) {
 		"message": "ok",
 		"code":    10000,
 	})
+
 }
 
 // GetMissionStatus api
@@ -62,7 +63,6 @@ func GetMissionStatus(ctx *gin.Context) {
 			"message": err.Error(),
 			"code":    10001,
 		})
-
 		return
 	}
 
@@ -71,10 +71,6 @@ func GetMissionStatus(ctx *gin.Context) {
 		"message": "ok",
 		"code":    10000,
 	})
-}
-
-func AddAssets(ctx *gin.Context) {
-
 }
 
 func CreateUpdateProcess(ctx *gin.Context) {
@@ -90,5 +86,24 @@ func CreateUpdateProcess(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "ok",
 		"code":    10000,
+	})
+}
+
+func UpdateListController(ctx *gin.Context) {
+	var apul AssetsProcessUpdateListForm
+	data, err := apul.List(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":     data.ModelSlice,
+		"total":    data.Total,
+		"pageSize": data.PageSize,
+		"code":     10000,
 	})
 }

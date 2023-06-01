@@ -42,6 +42,8 @@ func (rc *RpcClient) DockerUpdate() (err error) {
 		return
 	}
 
+	defer rc.RpcConn.Close()
+
 	for {
 		resp, err := stream.Recv()
 		if err == io.EOF {

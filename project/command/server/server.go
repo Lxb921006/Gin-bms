@@ -17,7 +17,7 @@ type server struct {
 func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_DockerUpdateServer) (err error) {
 	log.Println("rev run DockerUpdate")
 
-	file := fmt.Sprintf("sh /root/shellscript/DockerUpdate.sh %s | /root/shellscript/DockerUpdate.log", req.GetUuid())
+	file := fmt.Sprintf("sh /root/shellscript/DockerUpdate.sh %s | tee /root/shellscript/DockerUpdate.log", req.GetUuid())
 	cmd := exec.Command("sh", "-c", file)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
@@ -45,7 +45,7 @@ func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProce
 func (s *server) JavaUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_JavaUpdateServer) (err error) {
 	log.Println("rev run JavaUpdate")
 
-	file := fmt.Sprintf("sh /root/shellscript/JavaUpdate.sh %s | /root/shellscript/JavaUpdate.log", req.GetUuid())
+	file := fmt.Sprintf("sh /root/shellscript/JavaUpdate.sh %s | tee /root/shellscript/JavaUpdate.log", req.GetUuid())
 	cmd := exec.Command("sh", "-c", file)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
