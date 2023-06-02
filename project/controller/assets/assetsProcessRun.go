@@ -5,6 +5,7 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/command/client"
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"github.com/Lxb921006/Gin-bms/project/service"
+	"github.com/Lxb921006/Gin-bms/project/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc"
@@ -12,6 +13,7 @@ import (
 	"time"
 )
 
+// 远程调用对应脚本
 type AssetsProcessRunForm struct {
 	Ip         string     `form:"ip" json:"ip" gorm:"not null" binding:"required"`
 	UpdateName string     `form:"update_name" json:"update_name" gorm:"not null" binding:"required"`
@@ -56,6 +58,7 @@ func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
 	}
 }
 
+// 更新列表查询
 type AssetsProcessUpdateListForm struct {
 	Ip         string `form:"ip,omitempty" json:"ip"`
 	Uuid       string `form:"uuid,omitempty" json:"uuid"`
@@ -69,7 +72,7 @@ type AssetsProcessUpdateListForm struct {
 
 func (apul *AssetsProcessUpdateListForm) List(ctx *gin.Context) (data *service.Paginate, err error) {
 	var lm model.AssetsProcessUpdateRecordModel
-	if err = ctx.ShouldBindQuery(apul); err != nil {
+	if err = ctx.ShouldBind(apul); err != nil {
 		return
 	}
 
@@ -79,8 +82,29 @@ func (apul *AssetsProcessUpdateListForm) List(ctx *gin.Context) (data *service.P
 		return
 	}
 
+	if err = utils.CopyStruct(apul, &lm); err != nil {
+		return
+	}
+
 	data, err = lm.List(apul.Page, lm)
 	if err != nil {
+		return
+	}
+
+	return
+}
+
+// 更新列表添加数据
+type AssetsProcessRunCreateForm struct {
+}
+
+func (c *AssetsProcessRunCreateForm) Create(ctx *gin.Context) (err error) {
+	var cm model.AssetsProcessUpdateRecordModel
+	if err = ctx.ShouldBindJSON(&cm); err != nil {
+		return
+	}
+
+	if err = cm.Create(cm); err != nil {
 		return
 	}
 

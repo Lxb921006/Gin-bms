@@ -8,13 +8,12 @@ import (
 )
 
 type AssetsModel struct {
-	gorm.Model
+	ID       int64     `form:"id,omitempty" json:"id" gorm:"primaryKey"`
 	Ip       string    `json:"ip" gorm:"not null"`
 	Project  string    `json:"project" gorm:"not null"`
 	Status   string    `json:"status" gorm:"not null"`
 	Operator string    `json:"operator" gorm:"not null"`
-	Start    time.Time `json:"start" gorm:"-"`
-	End      time.Time `json:"end" gorm:"-"`
+	Start    time.Time `form:"start,omitempty" json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
 }
 
 func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, err error) {
@@ -50,4 +49,12 @@ func (o *AssetsModel) Del(pid []int32) (err error) {
 	}
 
 	return tx.Commit().Error
+}
+
+func (o *AssetsModel) BeforeSave(tx *gorm.DB) (err error) {
+	if o.Start.IsZero() {
+		o.Start = time.Now()
+	}
+
+	return
 }

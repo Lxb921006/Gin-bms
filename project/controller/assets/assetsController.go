@@ -74,7 +74,7 @@ func GetMissionStatus(ctx *gin.Context) {
 }
 
 func CreateUpdateProcess(ctx *gin.Context) {
-	var create ProcessUpdateForm
+	var create AssetsProcessRunCreateForm
 	if err := create.Create(ctx); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
@@ -92,6 +92,25 @@ func CreateUpdateProcess(ctx *gin.Context) {
 func UpdateListController(ctx *gin.Context) {
 	var apul AssetsProcessUpdateListForm
 	data, err := apul.List(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":     data.ModelSlice,
+		"total":    data.Total,
+		"pageSize": data.PageSize,
+		"code":     10000,
+	})
+}
+
+func AssetsListController(ctx *gin.Context) {
+	var alc AssetsListForm
+	data, err := alc.List(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),

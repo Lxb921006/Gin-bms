@@ -64,7 +64,7 @@ func (rc *RpcClient) DockerUpdate() (err error) {
 
 func (rc *RpcClient) JavaUpdate() (err error) {
 	c := pb.NewStreamUpdateProcessServiceClient(rc.RpcConn)
-	stream, err := c.JavaUpdate(context.Background(), &pb.StreamRequest{})
+	stream, err := c.JavaUpdate(context.Background(), &pb.StreamRequest{Uuid: rc.Uuid})
 	if err != nil {
 		return
 	}
@@ -74,6 +74,8 @@ func (rc *RpcClient) JavaUpdate() (err error) {
 		if err == io.EOF {
 			break
 		}
+
+		log.Println(resp.Message)
 
 		if rc.WsConn != nil {
 			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
