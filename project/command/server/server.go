@@ -42,6 +42,60 @@ func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProce
 	return
 }
 
+func (s *server) DockerUpdateLog(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_DockerUpdateLogServer) (err error) {
+	log.Println("rev run DockerUpdateLog")
+
+	cmd := exec.Command("more", "/root/shellscript/DockerUpdate.log", req.GetUuid())
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return
+	}
+
+	if err = cmd.Start(); err != nil {
+		return
+	}
+
+	scanner := bufio.NewScanner(stdout)
+	for scanner.Scan() {
+		if err = stream.Send(&pb.StreamReply{Message: scanner.Text()}); err != nil {
+			return
+		}
+	}
+
+	if err = cmd.Wait(); err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *server) JavaUpdateLog(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_JavaUpdateLogServer) (err error) {
+	log.Println("rev run JavaUpdateLog")
+
+	cmd := exec.Command("more", "/root/shellscript/JavaUpdate.log", req.GetUuid())
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return
+	}
+
+	if err = cmd.Start(); err != nil {
+		return
+	}
+
+	scanner := bufio.NewScanner(stdout)
+	for scanner.Scan() {
+		if err = stream.Send(&pb.StreamReply{Message: scanner.Text()}); err != nil {
+			return
+		}
+	}
+
+	if err = cmd.Wait(); err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *server) JavaUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_JavaUpdateServer) (err error) {
 	log.Println("rev run JavaUpdate")
 

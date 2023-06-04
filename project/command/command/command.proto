@@ -9,6 +9,8 @@ service StreamUpdateProcessService {
   rpc JavaUpdate (StreamRequest) returns (stream StreamReply) {}
   rpc DockerReload (StreamRequest) returns (stream StreamReply) {}
   rpc JavaReload (StreamRequest) returns (stream StreamReply) {}
+  rpc JavaUpdateLog (StreamRequest) returns (stream StreamReply) {}
+  rpc DockerUpdateLog (StreamRequest) returns (stream StreamReply) {}
 }
 
 

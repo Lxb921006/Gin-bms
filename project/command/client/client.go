@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"io"
-	"log"
 )
 
 type RpcClient struct {
@@ -26,6 +25,14 @@ func (rc *RpcClient) Send() (err error) {
 		}
 	case "javaUpdate":
 		if err = rc.JavaUpdate(); err != nil {
+			return err
+		}
+	case "dockerUpdateLog":
+		if err = rc.DockerUpdateLog(); err != nil {
+			return err
+		}
+	case "javaUpdateLog":
+		if err = rc.JavaUpdateLog(); err != nil {
 			return err
 		}
 	default:
@@ -50,7 +57,30 @@ func (rc *RpcClient) DockerUpdate() (err error) {
 			break
 		}
 
-		log.Println(resp.Message)
+		if rc.WsConn != nil {
+			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
+				return err
+			}
+		}
+	}
+
+	return
+}
+
+func (rc *RpcClient) DockerUpdateLog() (err error) {
+	c := pb.NewStreamUpdateProcessServiceClient(rc.RpcConn)
+	stream, err := c.DockerUpdateLog(context.Background(), &pb.StreamRequest{Uuid: rc.Uuid})
+	if err != nil {
+		return
+	}
+
+	defer rc.RpcConn.Close()
+
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
 
 		if rc.WsConn != nil {
 			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
@@ -75,7 +105,29 @@ func (rc *RpcClient) JavaUpdate() (err error) {
 			break
 		}
 
-		log.Println(resp.Message)
+		if rc.WsConn != nil {
+			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
+				return err
+			}
+		}
+
+	}
+
+	return
+}
+
+func (rc *RpcClient) JavaUpdateLog() (err error) {
+	c := pb.NewStreamUpdateProcessServiceClient(rc.RpcConn)
+	stream, err := c.JavaUpdateLog(context.Background(), &pb.StreamRequest{Uuid: rc.Uuid})
+	if err != nil {
+		return
+	}
+
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
 
 		if rc.WsConn != nil {
 			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
