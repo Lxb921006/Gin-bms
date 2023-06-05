@@ -18,7 +18,7 @@ type AssetsModel struct {
 
 func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, err error) {
 	var os []AssetsModel
-	sql := dao.DB.Model(os).Or(am)
+	sql := dao.DB.Model(o).Where(&am)
 	pg := service.NewPaginate()
 	data, err = pg.GetPageData(page, sql)
 	if err != nil {

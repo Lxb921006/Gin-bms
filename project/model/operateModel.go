@@ -21,7 +21,7 @@ type OperateLog struct {
 
 func (o *OperateLog) OperateLogList(page int, op OperateLog) (data *service.Paginate, err error) {
 	var os []OperateLog
-	sql := dao.DB.Model(os).Or(op)
+	sql := dao.DB.Model(o).Where(op)
 	pg := service.NewPaginate()
 	data, err = pg.GetPageData(page, sql)
 	if err != nil {

@@ -40,7 +40,7 @@ func (u *Role) CreateRole(rd Role) (err error) {
 	return
 }
 
-//分配权限
+// 分配权限
 func (u *Role) AllotPerms(rid uint, pid []uint) (err error) {
 	var p []Permission
 	if err = dao.DB.Where("id IN ?", pid).Find(&p).Error; err != nil {
@@ -60,7 +60,7 @@ func (u *Role) AllotPerms(rid uint, pid []uint) (err error) {
 	return
 }
 
-//移除权限
+// 移除权限
 func (u *Role) RemovePerms(rid uint, pid []uint) (p []Permission, err error) {
 	var rp RolePermission
 	tx := dao.DB.Begin()
@@ -111,7 +111,7 @@ func (u *Role) GetAllRoles() (ul []Role, err error) {
 func (u *Role) GetRolesList(page int, rolename Role) (data *service.Paginate, err error) {
 	var rs []Role
 	var frs []Role
-	sql := dao.DB.Model(u).Or(rolename)
+	sql := dao.DB.Model(u).Where(rolename)
 	pg := service.NewPaginate()
 	data, err = pg.GetPageData(page, sql)
 	if err != nil {

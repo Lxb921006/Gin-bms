@@ -126,3 +126,19 @@ func AssetsListController(ctx *gin.Context) {
 		"code":     10000,
 	})
 }
+
+func AssetsUpoadController(ctx *gin.Context) {
+	var auf AssetsUpoadForm
+	if err := auf.UploadFiles(ctx); err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "upload ok",
+		"code":    10000,
+	})
+}

@@ -23,7 +23,7 @@ type AssetsProcessUpdateRecordModel struct {
 
 func (pur *AssetsProcessUpdateRecordModel) List(page int, am AssetsProcessUpdateRecordModel) (data *service.Paginate, err error) {
 	var os []AssetsProcessUpdateRecordModel
-	sql := dao.DB.Model(os).Or(am)
+	sql := dao.DB.Model(pur).Where(&am)
 	pg := service.NewPaginate()
 	data, err = pg.GetPageData(page, sql)
 	if err != nil {

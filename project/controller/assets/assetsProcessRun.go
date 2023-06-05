@@ -1,6 +1,7 @@
 package assets
 
 import (
+	"errors"
 	"fmt"
 	"github.com/Lxb921006/Gin-bms/project/command/client"
 	"github.com/Lxb921006/Gin-bms/project/model"
@@ -10,6 +11,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"path/filepath"
 	"time"
 )
 
@@ -106,6 +108,31 @@ func (c *AssetsProcessRunCreateForm) Create(ctx *gin.Context) (err error) {
 
 	if err = cm.Create(cm); err != nil {
 		return
+	}
+
+	return
+}
+
+// 上传文件
+type AssetsUpoadForm struct {
+	Upload []string `form:"upload" json:"upload" binding:"required"`
+}
+
+func (u *AssetsUpoadForm) UploadFiles(ctx *gin.Context) (err error) {
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return
+	}
+
+	files := form.File["file"]
+	if len(files) == 0 {
+		return errors.New("上传失败")
+	}
+
+	for _, file := range files {
+		if err = ctx.SaveUploadedFile(file, filepath.Join("C:\\Users\\Administrator\\Desktop\\update", file.Filename)); err != nil {
+			return
+		}
 	}
 
 	return
