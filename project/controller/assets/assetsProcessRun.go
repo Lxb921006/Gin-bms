@@ -115,7 +115,7 @@ func (c *AssetsProcessRunCreateForm) Create(ctx *gin.Context) (err error) {
 
 // 上传文件
 type AssetsUpoadForm struct {
-	Upload []string `form:"upload" json:"upload" binding:"required"`
+	Files []string `form:"upload" json:"upload" binding:"required"`
 }
 
 func (u *AssetsUpoadForm) UploadFiles(ctx *gin.Context) (err error) {

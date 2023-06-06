@@ -99,10 +99,13 @@ func (r *RedisDb) ClearToken(user string) (err error) {
 	return
 }
 
-// 很简单很简单的限流功能，每秒只能接收5次访问，超过5次返回502并需要等待10秒后才能访问
+// 很简单很简单的限流功能，每秒只能接收20次访问，超过5次返回502并需要等待10秒后才能访问
 func (r *RedisDb) Visitlimit(host string) (err error) {
 	lock.Lock()
 	defer lock.Unlock()
+
+	//每秒最多请求数
+	var limit uint = 20
 
 	mdd := Md{}
 	ut := uint64(time.Now().Unix())
@@ -123,7 +126,7 @@ func (r *RedisDb) Visitlimit(host string) (err error) {
 		return
 	}
 
-	if vd.Rtime >= ut && vd.Count > 5 {
+	if vd.Rtime >= ut && vd.Count > limit {
 		vd.Count = 1
 		vd.Wait = ut + 10
 		r.md["visit_"+host] = vd
