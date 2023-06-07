@@ -23,7 +23,7 @@ func NewPaginate() *Paginate {
 
 func (p *Paginate) GetPageData(page int, sql *gorm.DB) (pg *Paginate, err error) {
 	var total int64
-	size := 5 //这里是写死了每页最多展示的数据
+	size := 10 //这里是写死了每页最多展示的数据
 	if err = sql.Count(&total).Error; err != nil {
 		return
 	}
