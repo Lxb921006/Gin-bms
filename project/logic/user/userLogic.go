@@ -8,7 +8,7 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/service"
 )
 
-//这里是存放user这个app的复杂逻辑代码
+// 这里是存放user这个app的复杂逻辑代码
 type UserListQuery struct {
 	CurPage  int               `form:"page"  validate:"min=1" binding:"required"`
 	Name     string            `form:"name"`
@@ -38,7 +38,7 @@ func (ul *UserListQuery) PaginateLogic(u model.User, api api.Api) (err error) {
 			return
 		}
 	} else {
-		ul.PageData, err = u.GetUserByMmPaginate(ul.CurPage, ul.RoleName)
+		ul.PageData, err = u.GetUserByMmPaginate(ul.CurPage, ul.RoleName, u)
 		if err != nil {
 			return
 		}
