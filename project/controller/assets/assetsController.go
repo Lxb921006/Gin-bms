@@ -142,3 +142,19 @@ func AssetsUpoadController(ctx *gin.Context) {
 		"code":    10000,
 	})
 }
+
+func AssetsCreateController(ctx *gin.Context) {
+	var acf AssetsCreateForm
+	if err := acf.Create(ctx); err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "创建成功",
+		"code":    10000,
+	})
+}

@@ -12,7 +12,7 @@ func (WhileUrls) WhileList(url string) bool {
 		"/login",
 		"/logout",
 		"/galogin",
-		"/assets/ws",
+		//"/assets/ws",
 		//"/assets/api",
 	}
 

@@ -63,7 +63,7 @@ func PermsVerify() gin.HandlerFunc {
 		}
 
 		var p []model.Permission
-		whileUrl := []string{}
+		var whileUrl []string
 		pass := false
 		user := ctx.Query("user")
 

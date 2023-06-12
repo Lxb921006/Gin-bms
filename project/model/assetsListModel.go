@@ -8,12 +8,12 @@ import (
 )
 
 type AssetsModel struct {
-	ID       int64     `form:"id,omitempty" json:"id" gorm:"primaryKey"`
-	Ip       string    `json:"ip" gorm:"not null"`
-	Project  string    `json:"project" gorm:"not null"`
-	Status   string    `json:"status" gorm:"not null"`
-	Operator string    `json:"operator" gorm:"not null"`
-	Start    time.Time `form:"start,omitempty" json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
+	ID      int64  `form:"id,omitempty" json:"id" gorm:"primaryKey"`
+	Ip      string `json:"ip" gorm:"not null"`
+	Project string `json:"project" gorm:"not null"`
+	//Status   string    `json:"status" gorm:"not null"`
+	//Operator string    `json:"operator" gorm:"not null"`
+	Start time.Time `form:"start,omitempty" json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
 }
 
 func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, err error) {
@@ -30,6 +30,14 @@ func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, er
 	}
 
 	data.ModelSlice = os
+
+	return
+}
+
+func (o *AssetsModel) Create(am []*AssetsModel) (err error) {
+	if err = dao.DB.Create(am).Error; err != nil {
+		return
+	}
 
 	return
 }

@@ -15,5 +15,6 @@ func AssetsRouter(r *gin.Engine) {
 		assets.POST("/process/update/create", ac.CreateUpdateProcess)
 		assets.POST("/api", ac.ProcessApi)
 		assets.POST("/upload", ac.AssetsUpoadController)
+		assets.POST("/add", ac.AssetsCreateController)
 	}
 }

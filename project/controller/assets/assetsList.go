@@ -39,3 +39,31 @@ func (a *AssetsListForm) List(ctx *gin.Context) (data *service.Paginate, err err
 
 	return
 }
+
+type AssetsCreateForm struct {
+	Ip      []string `form:"ip" json:"ip"`
+	Project string   `form:"project" json:"project"`
+}
+
+func (a *AssetsCreateForm) Create(ctx *gin.Context) (err error) {
+	var am model.AssetsModel
+	var aml = make([]*model.AssetsModel, 10)
+	if err := ctx.ShouldBind(a); err != nil {
+		return
+	}
+
+	for _, ip := range a.Ip {
+		data := &model.AssetsModel{
+			Project: a.Project,
+			Ip:      string(ip),
+		}
+
+		aml = append(aml, data)
+	}
+
+	if err := am.Create(aml); err != nil {
+		return
+	}
+
+	return
+}
