@@ -16,7 +16,6 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-// ProcessWs websocket
 func ProcessWs(ctx *gin.Context) {
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
@@ -36,7 +35,6 @@ func ProcessWs(ctx *gin.Context) {
 	}
 }
 
-// ProcessApi api
 func ProcessApi(ctx *gin.Context) {
 	ps := NewAssetsProcessRunForm()
 	if err := ps.Run(ctx); err != nil {
@@ -54,7 +52,6 @@ func ProcessApi(ctx *gin.Context) {
 
 }
 
-// GetMissionStatus api
 func GetMissionStatus(ctx *gin.Context) {
 	var ps ProcessStatusForm
 	data, err := ps.Get(ctx)
@@ -155,6 +152,22 @@ func AssetsCreateController(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "创建成功",
+		"code":    10000,
+	})
+}
+
+func AssetsDeleteController(ctx *gin.Context) {
+	var adf AssetsDelForm
+	if err := adf.Del(ctx); err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "删除成功",
 		"code":    10000,
 	})
 }

@@ -11,8 +11,8 @@ import (
 //资产列表的增删改查
 
 type AssetsListForm struct {
-	Ip      string `form:"ip,omitempty" json:"ip" gorm:"not null"`
-	Project string `form:"project,omitempty" json:"project" gorm:"not null"`
+	Ip      string `form:"ip,omitempty" json:"ip"`
+	Project string `form:"project,omitempty" json:"project"`
 	Page    int    `form:"page" validate:"min=1" binding:"required"`
 }
 
@@ -47,21 +47,38 @@ type AssetsCreateForm struct {
 
 func (a *AssetsCreateForm) Create(ctx *gin.Context) (err error) {
 	var am model.AssetsModel
-	var aml = make([]*model.AssetsModel, 10)
-	if err := ctx.ShouldBind(a); err != nil {
+	var aml []*model.AssetsModel
+	if err = ctx.ShouldBindJSON(a); err != nil {
 		return
 	}
 
 	for _, ip := range a.Ip {
 		data := &model.AssetsModel{
 			Project: a.Project,
-			Ip:      string(ip),
+			Ip:      ip,
 		}
 
 		aml = append(aml, data)
 	}
 
-	if err := am.Create(aml); err != nil {
+	if err = am.Create(aml); err != nil {
+		return
+	}
+
+	return
+}
+
+type AssetsDelForm struct {
+	Ips []string `form:"ips" json:"ips" binding:"required"`
+}
+
+func (a *AssetsDelForm) Del(ctx *gin.Context) (err error) {
+	var am model.AssetsModel
+	if err = ctx.BindJSON(a); err != nil {
+		return
+	}
+
+	if err = am.Del(a.Ips); err != nil {
 		return
 	}
 

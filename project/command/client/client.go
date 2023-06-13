@@ -15,6 +15,7 @@ type RpcClient struct {
 	Uuid    string
 	RpcConn *grpc.ClientConn
 	WsConn  *websocket.Conn
+	ctx     context.Context
 }
 
 func (rc *RpcClient) Send() (err error) {

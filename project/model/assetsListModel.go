@@ -8,12 +8,12 @@ import (
 )
 
 type AssetsModel struct {
-	ID      int64  `form:"id,omitempty" json:"id" gorm:"primaryKey"`
-	Ip      string `json:"ip" gorm:"not null"`
-	Project string `json:"project" gorm:"not null"`
-	//Status   string    `json:"status" gorm:"not null"`
-	//Operator string    `json:"operator" gorm:"not null"`
-	Start time.Time `form:"start,omitempty" json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
+	ID       int64     `json:"id" gorm:"primaryKey"`
+	Ip       string    `json:"ip" gorm:"not null;unique"`
+	Project  string    `json:"project" gorm:"not null"`
+	Status   string    `json:"status" gorm:"default:100"`
+	Operator string    `json:"operator" gorm:"default:lxb"`
+	Start    time.Time `json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
 }
 
 func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, err error) {
@@ -42,7 +42,7 @@ func (o *AssetsModel) Create(am []*AssetsModel) (err error) {
 	return
 }
 
-func (o *AssetsModel) Del(pid []int32) (err error) {
+func (o *AssetsModel) Del(ip []string) (err error) {
 	tx := dao.DB.Begin()
 
 	defer func() {
@@ -51,7 +51,7 @@ func (o *AssetsModel) Del(pid []int32) (err error) {
 		}
 	}()
 
-	if err = tx.Where("id IN ?", pid).Delete(o).Error; err != nil {
+	if err = tx.Where("ip IN ?", ip).Delete(o).Error; err != nil {
 		tx.Rollback()
 		return
 	}
