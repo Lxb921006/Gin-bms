@@ -1,32 +1,29 @@
 package assets
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/Lxb921006/Gin-bms/project/command/client"
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/Lxb921006/Gin-bms/project/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"path/filepath"
-	"time"
 )
 
 // 远程调用对应脚本
 type AssetsProcessRunForm struct {
-	Ip         string     `form:"ip" json:"ip" gorm:"not null" binding:"required"`
-	UpdateName string     `form:"update_name" json:"update_name" gorm:"not null" binding:"required"`
-	Uuid       string     `form:"uuid" json:"uuid" gorm:"not null;unique" binding:"required"`
-	Err        chan error `form:"err,omitempty" json:"-"`
+	Ip         string `form:"ip" json:"ip" gorm:"not null" binding:"required"`
+	UpdateName string `form:"update_name" json:"update_name" gorm:"not null" binding:"required"`
+	Uuid       string `form:"uuid" json:"uuid" gorm:"not null;unique" binding:"required"`
 }
 
-func NewAssetsProcessRunForm() *AssetsProcessRunForm {
-	return &AssetsProcessRunForm{
-		Err: make(chan error, 1),
-	}
+func (apf *AssetsProcessRunForm) Data() (data map[string]interface{}) {
+	b, _ := json.Marshal(apf)
+	json.Unmarshal(b, &data)
+
+	return
+
 }
 
 func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
@@ -34,30 +31,11 @@ func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
 		return
 	}
 
-	go func() {
-		server := fmt.Sprintf("%s:12306", apf.Ip)
-		conn, err := grpc.Dial(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			apf.Err <- err
-			return
-		}
+	cy := utils.NewCelery()
+	cy.Task(apf)
+	close(cy.Works)
 
-		cn := client.NewRpcClient(apf.UpdateName, apf.Uuid, nil, conn)
-		go func() {
-			if err = cn.Send(); err != nil {
-				apf.Err <- err
-			}
-		}()
-	}()
-
-	for {
-		select {
-		case err = <-apf.Err:
-			return
-		case <-time.After(time.Second):
-			return
-		}
-	}
+	return
 }
 
 // 更新列表查询

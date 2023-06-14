@@ -36,7 +36,7 @@ func ProcessWs(ctx *gin.Context) {
 }
 
 func ProcessApi(ctx *gin.Context) {
-	ps := NewAssetsProcessRunForm()
+	var ps AssetsProcessRunForm
 	if err := ps.Run(ctx); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
@@ -46,7 +46,7 @@ func ProcessApi(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "ok",
+		"message": "提交成功",
 		"code":    10000,
 	})
 
