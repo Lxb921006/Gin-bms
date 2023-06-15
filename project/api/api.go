@@ -5,5 +5,5 @@ type Api interface {
 }
 
 type CeleryInterface interface {
-	Data() (data map[string]interface{})
+	Data() (data map[string]interface{}, err error)
 }

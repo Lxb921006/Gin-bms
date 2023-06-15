@@ -6,6 +6,7 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/command/client"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"log"
 	"sync"
 )
 
@@ -17,15 +18,17 @@ type Celery struct {
 }
 
 func NewCelery() *Celery {
-	//data := celery.Data()
-
 	c := &Celery{
 		Works: make(chan api.CeleryInterface),
 	}
 
 	go func() {
 		for w := range c.Works {
-			data := w.Data()
+			data, err := w.Data()
+			if err != nil {
+				log.Println(err)
+				return
+			}
 			server := fmt.Sprintf("%s:12306", data["ip"].(string))
 			conn, err := grpc.Dial(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {

@@ -16,7 +16,7 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-func ProcessWs(ctx *gin.Context) {
+func ProcessWsController(ctx *gin.Context) {
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		fmt.Println("Failed to set websocket upgrade:", err)
@@ -35,7 +35,7 @@ func ProcessWs(ctx *gin.Context) {
 	}
 }
 
-func ProcessApi(ctx *gin.Context) {
+func ProcessApiController(ctx *gin.Context) {
 	var ps AssetsProcessRunForm
 	if err := ps.Run(ctx); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -52,7 +52,7 @@ func ProcessApi(ctx *gin.Context) {
 
 }
 
-func GetMissionStatus(ctx *gin.Context) {
+func GetMissionStatusController(ctx *gin.Context) {
 	var ps ProcessStatusForm
 	data, err := ps.Get(ctx)
 	if err != nil {
@@ -70,7 +70,7 @@ func GetMissionStatus(ctx *gin.Context) {
 	})
 }
 
-func CreateUpdateProcess(ctx *gin.Context) {
+func CreateUpdateProcessController(ctx *gin.Context) {
 	var create AssetsProcessRunCreateForm
 	if err := create.Create(ctx); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -81,7 +81,7 @@ func CreateUpdateProcess(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "ok",
+		"message": "更新已提交",
 		"code":    10000,
 	})
 }

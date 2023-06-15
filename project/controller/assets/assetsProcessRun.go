@@ -8,19 +8,25 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"log"
 	"path/filepath"
 )
 
-// 远程调用对应脚本
 type AssetsProcessRunForm struct {
 	Ip         string `form:"ip" json:"ip" gorm:"not null" binding:"required"`
 	UpdateName string `form:"update_name" json:"update_name" gorm:"not null" binding:"required"`
 	Uuid       string `form:"uuid" json:"uuid" gorm:"not null;unique" binding:"required"`
 }
 
-func (apf *AssetsProcessRunForm) Data() (data map[string]interface{}) {
-	b, _ := json.Marshal(apf)
-	json.Unmarshal(b, &data)
+func (apf *AssetsProcessRunForm) Data() (data map[string]interface{}, err error) {
+	b, err := json.Marshal(apf)
+	if err != nil {
+		return
+	}
+
+	if err = json.Unmarshal(b, &data); err != nil {
+		return
+	}
 
 	return
 
@@ -38,7 +44,6 @@ func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
 	return
 }
 
-// 更新列表查询
 type AssetsProcessUpdateListForm struct {
 	Ip         string `form:"ip,omitempty" json:"ip"`
 	Uuid       string `form:"uuid,omitempty" json:"uuid"`
@@ -74,24 +79,23 @@ func (apul *AssetsProcessUpdateListForm) List(ctx *gin.Context) (data *service.P
 	return
 }
 
-// 更新列表添加数据
 type AssetsProcessRunCreateForm struct {
+	DataList []model.AssetsProcessUpdateRecordModel `form:"data_list" json:"data_list" binding:"required"`
 }
 
 func (c *AssetsProcessRunCreateForm) Create(ctx *gin.Context) (err error) {
 	var cm model.AssetsProcessUpdateRecordModel
-	if err = ctx.ShouldBindJSON(&cm); err != nil {
+	if err = ctx.ShouldBindJSON(c); err != nil {
 		return
 	}
 
-	if err = cm.Create(cm); err != nil {
+	if err = cm.Create(c.DataList); err != nil {
 		return
 	}
 
 	return
 }
 
-// 上传文件
 type AssetsUpoadForm struct {
 	Files []string `form:"upload" json:"upload" binding:"required"`
 }
@@ -103,6 +107,10 @@ func (u *AssetsUpoadForm) UploadFiles(ctx *gin.Context) (err error) {
 	}
 
 	files := form.File["file"]
+	data := form.Value["ips"]
+
+	log.Println(data)
+
 	if len(files) == 0 {
 		return errors.New("上传失败")
 	}

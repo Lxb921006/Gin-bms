@@ -8,17 +8,17 @@ import (
 )
 
 type AssetsProcessUpdateRecordModel struct {
-	ID         int64     `form:"id,omitempty" json:"id" gorm:"primaryKey"`
-	Ip         string    `form:"ip" json:"ip" gorm:"not null" binding:"required"`
-	Uuid       string    `form:"uuid" json:"uuid" gorm:"not null;unique" binding:"required"`
-	UpdateName string    `form:"update_name" json:"update_name" gorm:"not null" binding:"required"`
-	Project    string    `form:"project" json:"project" gorm:"not null" binding:"required"`
-	Operator   string    `form:"operator" json:"operator" gorm:"not null" binding:"required"`
-	Progress   int32     `form:"progress,omitempty" json:"progress" gorm:"default:0;nullable"`
-	Status     int32     `form:"status,omitempty" json:"status" gorm:"default:400;comment:200-success,300-failed,400-running;nullable"`
-	CostTime   int32     `form:"cost_time,omitempty" json:"cost_time" gorm:"default:0;nullable"`
-	Start      time.Time `form:"start,omitempty" json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
-	End        time.Time `form:"end,omitempty" json:"end" gorm:"default:CURRENT_TIMESTAMP;nullable"`
+	ID         int64     `form:"id,omitempty" json:"id,omitempty" gorm:"primaryKey"`
+	Ip         string    `form:"ip" json:"ip,omitempty" gorm:"not null"`
+	Uuid       string    `form:"uuid" json:"uuid,omitempty" gorm:"not null;unique"`
+	UpdateName string    `form:"update_name" json:"update_name,omitempty" gorm:"not null"`
+	Project    string    `form:"project" json:"project,omitempty" gorm:"not null"`
+	Operator   string    `form:"operator" json:"operator,omitempty" gorm:"not null"`
+	Progress   int32     `form:"progress,omitempty" json:"progress,omitempty" gorm:"default:0;nullable"`
+	Status     int32     `form:"status,omitempty" json:"status,omitempty" gorm:"default:400;comment:200-success,300-failed,400-running;nullable"`
+	CostTime   int32     `form:"cost_time,omitempty" json:"cost_time,omitempty" gorm:"default:0;nullable"`
+	Start      time.Time `form:"start,omitempty" json:"start,omitempty" gorm:"default:CURRENT_TIMESTAMP;nullable"`
+	End        time.Time `form:"end,omitempty" json:"end,omitempty" gorm:"default:CURRENT_TIMESTAMP;nullable"`
 }
 
 func (pur *AssetsProcessUpdateRecordModel) List(page int, am AssetsProcessUpdateRecordModel) (data *service.Paginate, err error) {
@@ -39,7 +39,7 @@ func (pur *AssetsProcessUpdateRecordModel) List(page int, am AssetsProcessUpdate
 	return
 }
 
-func (pur *AssetsProcessUpdateRecordModel) Create(data AssetsProcessUpdateRecordModel) (err error) {
+func (pur *AssetsProcessUpdateRecordModel) Create(data []AssetsProcessUpdateRecordModel) (err error) {
 	if err = dao.DB.Create(&data).Error; err != nil {
 		return
 	}
