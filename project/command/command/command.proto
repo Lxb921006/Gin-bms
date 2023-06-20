@@ -4,6 +4,15 @@ option go_package = "github.com/Lxb921006/Gin-bms/project/command;command";
 
 package command;
 
+service FileTransferService {
+  rpc SendFile(stream FileMessage) returns (stream FileMessage) {}
+}
+
+message FileMessage {
+  bytes byte = 1;
+  string name = 2;
+}
+
 service StreamUpdateProcessService {
   rpc DockerUpdate (StreamRequest) returns (stream StreamReply) {}
   rpc JavaUpdate (StreamRequest) returns (stream StreamReply) {}

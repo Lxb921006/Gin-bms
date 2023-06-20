@@ -46,6 +46,14 @@ func (pur *AssetsProcessUpdateRecordModel) Create(data []AssetsProcessUpdateReco
 	return
 }
 
+func (pur *AssetsProcessUpdateRecordModel) Update(data map[string]interface{}) (err error) {
+	if err = dao.DB.Model(pur).Where("uuid = ?", data["uuid"].(string)).Updates(data).Error; err != nil {
+		return
+	}
+
+	return
+}
+
 func (pur *AssetsProcessUpdateRecordModel) Del(pid []int32) (err error) {
 	tx := dao.DB.Begin()
 

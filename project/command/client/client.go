@@ -13,6 +13,7 @@ import (
 type RpcClient struct {
 	Name    string
 	Uuid    string
+	File    string
 	RpcConn *grpc.ClientConn
 	WsConn  *websocket.Conn
 	ctx     context.Context

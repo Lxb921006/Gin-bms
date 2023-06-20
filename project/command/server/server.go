@@ -2,12 +2,27 @@ package main
 
 import (
 	"bufio"
+	"crypto/md5"
+	"encoding/hex"
+	"errors"
 	"fmt"
 	pb "github.com/Lxb921006/Gin-bms/project/command/command"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 	"net"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"sync"
+)
+
+var (
+	errs error
+	once sync.Once
+	wf   *os.File
+	file string
+	path = "C:\\Users\\Administrator\\Desktop"
 )
 
 type server struct {
@@ -129,6 +144,62 @@ func (s *server) DockerReload(req *pb.StreamRequest, stream pb.StreamUpdateProce
 }
 
 func (s *server) JavaReload(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_JavaReloadServer) (err error) {
+	return
+}
+
+func (s *server) SendFile(stream pb.FileTransferService_SendFileServer) (err error) {
+	log.Println("rec file")
+
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		once.Do(func() {
+			file = filepath.Join(path, resp.GetName())
+			wf, err = os.Create(file)
+			if err != nil {
+				errs = errors.New(err.Error())
+			}
+		})
+
+		if errs != nil {
+			return errs
+		}
+
+		wf.Write(resp.Byte)
+
+	}
+
+	wf.Close()
+
+	log.Println("write ok")
+
+	m, _ := s.FileMd5(file)
+
+	if err = stream.Send(&pb.FileMessage{Byte: []byte("md5"), Name: m}); err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *server) FileMd5(file string) (m5 string, err error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return
+	}
+
+	defer f.Close()
+
+	h := md5.New()
+	if _, err = io.Copy(h, f); err != nil {
+		return
+	}
+
+	m5 = hex.EncodeToString(h.Sum(nil))
+
 	return
 }
 

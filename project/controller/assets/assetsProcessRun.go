@@ -44,6 +44,8 @@ func (apf *AssetsProcessRunForm) Run(ctx *gin.Context) (err error) {
 	return
 }
 
+func (apf *AssetsProcessRunForm) SendFile() {}
+
 type AssetsProcessUpdateListForm struct {
 	Ip         string `form:"ip,omitempty" json:"ip"`
 	Uuid       string `form:"uuid,omitempty" json:"uuid"`
