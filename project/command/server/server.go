@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"crypto/md5"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	pb "github.com/Lxb921006/Gin-bms/project/command/command"
 	"google.golang.org/grpc"
@@ -14,19 +13,11 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"sync"
-)
-
-var (
-	errs error
-	once sync.Once
-	wf   *os.File
-	file string
-	path = "C:\\Users\\Administrator\\Desktop"
 )
 
 type server struct {
 	pb.UnimplementedStreamUpdateProcessServiceServer
+	pb.UnimplementedFileTransferServiceServer
 }
 
 func (s *server) DockerUpdate(req *pb.StreamRequest, stream pb.StreamUpdateProcessService_DockerUpdateServer) (err error) {
@@ -150,35 +141,56 @@ func (s *server) JavaReload(req *pb.StreamRequest, stream pb.StreamUpdateProcess
 func (s *server) SendFile(stream pb.FileTransferService_SendFileServer) (err error) {
 	log.Println("rec file")
 
+	if err = s.ProcessMsg(stream); err != nil {
+		log.Println(err)
+	}
+
+	return
+}
+
+func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err error) {
+	log.Println("process msg")
+
+	var file string
+	var chunks [][]byte
+
 	for {
 		resp, err := stream.Recv()
 		if err == io.EOF {
+			log.Println("rec finished")
 			break
 		}
 
-		once.Do(func() {
+		if file == "" {
+			path := "C:\\Users\\Administrator\\Desktop"
 			file = filepath.Join(path, resp.GetName())
-			wf, err = os.Create(file)
-			if err != nil {
-				errs = errors.New(err.Error())
-			}
-		})
-
-		if errs != nil {
-			return errs
 		}
 
-		wf.Write(resp.Byte)
-
+		chunks = append(chunks, resp.Byte)
 	}
 
-	wf.Close()
+	_, err = os.Stat(file)
+	if err != nil {
+		fw, err := os.Create(file)
+		if err != nil {
+			return err
+		}
+		defer fw.Close()
 
-	log.Println("write ok")
+		for _, chunk := range chunks {
+			_, err := fw.WriteString(string(chunk))
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	log.Println(file, " recv ok")
 
 	m, _ := s.FileMd5(file)
 
 	if err = stream.Send(&pb.FileMessage{Byte: []byte("md5"), Name: m}); err != nil {
+		log.Println("send err ", err)
 		return
 	}
 
@@ -203,6 +215,8 @@ func (s *server) FileMd5(file string) (m5 string, err error) {
 	return
 }
 
+type Servers func()
+
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 12306))
 	if err != nil {
@@ -210,7 +224,9 @@ func main() {
 	}
 
 	s := grpc.NewServer()
+
 	pb.RegisterStreamUpdateProcessServiceServer(s, &server{})
+	pb.RegisterFileTransferServiceServer(s, &server{})
 
 	log.Printf("server listening at %v", lis.Addr())
 

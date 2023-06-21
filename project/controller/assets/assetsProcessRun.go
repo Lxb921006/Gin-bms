@@ -125,3 +125,8 @@ func (u *AssetsUpoadForm) UploadFiles(ctx *gin.Context) (err error) {
 
 	return
 }
+
+func (u *AssetsUpoadForm) SendFileToBackEnd(ip, file string) (err error) {
+
+	return
+}
