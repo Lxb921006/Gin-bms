@@ -31,7 +31,7 @@ func NewCelery() *Celery {
 			data, err := w.Data()
 			dataModel["uuid"] = data["uuid"].(string)
 			dataModel["status"] = 400
-
+			
 			if err != nil {
 				log.Println("获取grpc参数失败: ", err)
 				return

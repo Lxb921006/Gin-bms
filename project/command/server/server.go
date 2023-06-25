@@ -149,10 +149,9 @@ func (s *server) SendFile(stream pb.FileTransferService_SendFileServer) (err err
 }
 
 func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err error) {
-	log.Println("process msg")
-
 	var file string
 	var chunks [][]byte
+	path := "C:\\Users\\Administrator\\Desktop"
 
 	for {
 		resp, err := stream.Recv()
@@ -162,7 +161,6 @@ func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err e
 		}
 
 		if file == "" {
-			path := "C:\\Users\\Administrator\\Desktop"
 			file = filepath.Join(path, resp.GetName())
 		}
 
@@ -185,12 +183,9 @@ func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err e
 		}
 	}
 
-	log.Println(file, " recv ok")
-
 	m, _ := s.FileMd5(file)
 
 	if err = stream.Send(&pb.FileMessage{Byte: []byte("md5"), Name: m}); err != nil {
-		log.Println("send err ", err)
 		return
 	}
 
@@ -214,8 +209,6 @@ func (s *server) FileMd5(file string) (m5 string, err error) {
 
 	return
 }
-
-type Servers func()
 
 func main() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 12306))
