@@ -5,8 +5,8 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
-	"time"
 )
 
 var upGrader = websocket.Upgrader{
@@ -107,22 +107,17 @@ func ProgramUpdateListController(ctx *gin.Context) {
 }
 
 func UploadController(ctx *gin.Context) {
-	time.Sleep(time.Second * 10)
-
-	ctx.SecureJSON(http.StatusOK, gin.H{
-		"code": 10001,
-	})
-	//auf := NewUploadForm()
-	//data, err := auf.UploadFiles(ctx)
-	//if err != nil {
-	//	ctx.SecureJSON(http.StatusOK, gin.H{
-	//		"message": err.Error(),
-	//		"code":    10001,
-	//	})
-	//} else {
-	//	log.Println(data)
-	//	ctx.SecureJSON(http.StatusBadRequest, nil)
-	//}
+	auf := NewUploadForm()
+	data, err := auf.UploadFiles(ctx)
+	if err != nil {
+		ctx.SecureJSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+	} else {
+		log.Println(data)
+		ctx.SecureJSON(http.StatusBadRequest, nil)
+	}
 
 }
 
