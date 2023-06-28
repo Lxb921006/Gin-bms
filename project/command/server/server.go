@@ -151,12 +151,11 @@ func (s *server) SendFile(stream pb.FileTransferService_SendFileServer) (err err
 func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err error) {
 	var file string
 	var chunks [][]byte
-	path := "C:\\Users\\Administrator\\Desktop"
+	path := "/opt"
 
 	for {
 		resp, err := stream.Recv()
 		if err == io.EOF {
-			log.Println("rec finished")
 			break
 		}
 
@@ -185,7 +184,7 @@ func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err e
 
 	m, _ := s.FileMd5(file)
 
-	if err = stream.Send(&pb.FileMessage{Byte: []byte("md5"), Name: m}); err != nil {
+	if err = stream.Send(&pb.FileMessage{Byte: []byte("md5"), Name: filepath.Base(file) + "|" + m}); err != nil {
 		return
 	}
 

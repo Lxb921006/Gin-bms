@@ -8,13 +8,13 @@ import (
 func AssetsRouter(r *gin.Engine) {
 	assets := r.Group("/assets")
 	{
-		assets.GET("/ws", ac.ProcessWsController)
+		assets.GET("/ws", ac.RunProgramWsController)
 		assets.GET("/process/status", ac.GetMissionStatusController)
-		assets.GET("/process/update/list", ac.UpdateListController)
+		assets.GET("/process/update/list", ac.ProgramUpdateListController)
 		assets.GET("/list", ac.AssetsListController)
-		assets.POST("/process/update/create", ac.CreateUpdateProcessController)
-		assets.POST("/api", ac.ProcessApiController)
-		assets.POST("/upload", ac.AssetsUpoadController)
+		assets.POST("/process/update/create", ac.CreateUpdateProgramRecordController)
+		assets.POST("/api", ac.RunProgramApiController)
+		assets.POST("/upload", ac.UploadController)
 		assets.POST("/add", ac.AssetsCreateController)
 		assets.POST("/del", ac.AssetsDeleteController)
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"time"
 )
 
 var upGrader = websocket.Upgrader{
@@ -16,7 +17,7 @@ var upGrader = websocket.Upgrader{
 	},
 }
 
-func ProcessWsController(ctx *gin.Context) {
+func RunProgramWsController(ctx *gin.Context) {
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		fmt.Println("Failed to set websocket upgrade:", err)
@@ -35,8 +36,8 @@ func ProcessWsController(ctx *gin.Context) {
 	}
 }
 
-func ProcessApiController(ctx *gin.Context) {
-	var ps AssetsProcessRunForm
+func RunProgramApiController(ctx *gin.Context) {
+	var ps RunProgramApiForm
 	if err := ps.Run(ctx); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
@@ -53,7 +54,7 @@ func ProcessApiController(ctx *gin.Context) {
 }
 
 func GetMissionStatusController(ctx *gin.Context) {
-	var ps ProcessStatusForm
+	var ps GetMissionStatusForm
 	data, err := ps.Get(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -70,8 +71,8 @@ func GetMissionStatusController(ctx *gin.Context) {
 	})
 }
 
-func CreateUpdateProcessController(ctx *gin.Context) {
-	var create AssetsProcessRunCreateForm
+func CreateUpdateProgramRecordController(ctx *gin.Context) {
+	var create CreateUpdateProgramRecordForm
 	if err := create.Create(ctx); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
@@ -86,8 +87,8 @@ func CreateUpdateProcessController(ctx *gin.Context) {
 	})
 }
 
-func UpdateListController(ctx *gin.Context) {
-	var apul AssetsProcessUpdateListForm
+func ProgramUpdateListController(ctx *gin.Context) {
+	var apul ProgramUpdateListForm
 	data, err := apul.List(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
@@ -103,6 +104,26 @@ func UpdateListController(ctx *gin.Context) {
 		"pageSize": data.PageSize,
 		"code":     10000,
 	})
+}
+
+func UploadController(ctx *gin.Context) {
+	time.Sleep(time.Second * 10)
+
+	ctx.SecureJSON(http.StatusOK, gin.H{
+		"code": 10001,
+	})
+	//auf := NewUploadForm()
+	//data, err := auf.UploadFiles(ctx)
+	//if err != nil {
+	//	ctx.SecureJSON(http.StatusOK, gin.H{
+	//		"message": err.Error(),
+	//		"code":    10001,
+	//	})
+	//} else {
+	//	log.Println(data)
+	//	ctx.SecureJSON(http.StatusBadRequest, nil)
+	//}
+
 }
 
 func AssetsListController(ctx *gin.Context) {
@@ -121,22 +142,6 @@ func AssetsListController(ctx *gin.Context) {
 		"total":    data.Total,
 		"pageSize": data.PageSize,
 		"code":     10000,
-	})
-}
-
-func AssetsUpoadController(ctx *gin.Context) {
-	var auf AssetsUpoadForm
-	if err := auf.UploadFiles(ctx); err != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"message": err.Error(),
-			"code":    10001,
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "upload ok",
-		"code":    10000,
 	})
 }
 

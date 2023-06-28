@@ -33,8 +33,8 @@ func SetupRouter() *http.Server {
 	t := &http.Server{
 		Addr:           ":9293",
 		Handler:        router,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
+		ReadTimeout:    60 * time.Second,
+		WriteTimeout:   60 * time.Second,
 		MaxHeaderBytes: 8 << 20, //body大小8M
 	}
 
