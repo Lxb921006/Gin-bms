@@ -5,19 +5,23 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"log"
 	"net/http"
 )
 
-var upGrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
+var (
+	ReadBufferSize  = 1024
+	WriteBufferSize = 1024
+)
 
 func RunProgramWsController(ctx *gin.Context) {
+	var upGrader = websocket.Upgrader{
+		ReadBufferSize:  ReadBufferSize,
+		WriteBufferSize: WriteBufferSize,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
 		fmt.Println("Failed to set websocket upgrade:", err)
@@ -34,6 +38,25 @@ func RunProgramWsController(ctx *gin.Context) {
 		}
 		return
 	}
+}
+
+func SyncFileWsController(ctx *gin.Context) {
+	var upGrader = websocket.Upgrader{
+		ReadBufferSize:  ReadBufferSize,
+		WriteBufferSize: WriteBufferSize,
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
+	}
+
+	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		fmt.Println("Failed to set websocket upgrade:", err)
+		return
+	}
+
+	defer conn.Close()
+
 }
 
 func RunProgramApiController(ctx *gin.Context) {
@@ -115,10 +138,12 @@ func UploadController(ctx *gin.Context) {
 			"code":    10001,
 		})
 	} else {
-		log.Println(data)
-		ctx.SecureJSON(http.StatusBadRequest, nil)
+		ctx.SecureJSON(http.StatusOK, gin.H{
+			"message": "upload ok",
+			"data":    data,
+			"code":    10000,
+		})
 	}
-
 }
 
 func AssetsListController(ctx *gin.Context) {

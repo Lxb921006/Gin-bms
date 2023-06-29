@@ -15,7 +15,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -127,7 +126,7 @@ func (ps *GetMissionStatusForm) Get(ctx *gin.Context) (data map[string]string, e
 }
 
 type UploadForm struct {
-	Files   []string `form:"upload" json:"upload" binding:"required"`
+	File    []string `form:"file" json:"file" binding:"required"`
 	resChan chan string
 }
 
@@ -145,8 +144,6 @@ func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err e
 
 	files := form.File["file"]
 	ips := form.Value["ips"]
-
-	log.Println("ips >>>", ips)
 
 	if len(files) == 0 {
 		return md5, errors.New("上传失败")
@@ -177,7 +174,7 @@ func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err e
 
 	for data := range u.resChan {
 		fd := strings.Split(data, "|")
-		log.Println("fd >>>", fd)
+		//log.Println(fd)
 		fileMd5[fd[0]] = fd[1]
 	}
 
@@ -242,7 +239,7 @@ func (u *UploadForm) SendFileToBackEnd(ip, file string) (err error) {
 			return err
 		}
 
-		u.resChan <- resp.GetName()
+		u.resChan <- ip + "-" + resp.GetName()
 	}
 
 	return

@@ -7,7 +7,10 @@ import (
 	pb "github.com/Lxb921006/Gin-bms/project/command/command"
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"io"
+	"os"
+	"path/filepath"
 )
 
 type RpcClient struct {
@@ -149,4 +152,84 @@ func NewRpcClient(name, uuid string, ws *websocket.Conn, rc *grpc.ClientConn) *R
 		WsConn:  ws,
 		RpcConn: rc,
 	}
+}
+
+// 分发文件
+type SyncFileRpcClient struct {
+	Ip      string
+	File    string
+	RpcConn *grpc.ClientConn
+	WsConn  *websocket.Conn
+	ctx     context.Context
+}
+
+func NewSyncFileRpcClient(ip, file string, ws *websocket.Conn, rc *grpc.ClientConn) *SyncFileRpcClient {
+	return &SyncFileRpcClient{
+		Ip:      ip,
+		File:    file,
+		WsConn:  ws,
+		RpcConn: rc,
+	}
+}
+
+func (sfrc *SyncFileRpcClient) Send() (err error) {
+	server := fmt.Sprintf("%s:12306", sfrc.Ip)
+
+	conn, err := grpc.Dial(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return
+	}
+
+	defer conn.Close()
+
+	c := pb.NewFileTransferServiceClient(conn)
+
+	stream, err := c.SendFile(context.Background())
+
+	if err != nil {
+		return
+	}
+
+	buffer := make([]byte, 8092)
+
+	f, err := os.Open(sfrc.File)
+	if err != nil {
+		return
+	}
+
+	defer f.Close()
+
+	for {
+		b, err := f.Read(buffer)
+		if err == io.EOF {
+			break
+		}
+
+		if b == 0 {
+			break
+		}
+
+		if err = stream.Send(&pb.FileMessage{Byte: buffer[:b], Name: filepath.Base(sfrc.File)}); err != nil {
+			return err
+		}
+	}
+
+	stream.CloseSend()
+
+	for {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return err
+		}
+
+		if err = sfrc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.GetName()))); err != nil {
+			return err
+		}
+	}
+
+	return
 }

@@ -43,6 +43,8 @@ func (ws *Ws) Send() (err error) {
 		return
 	}
 
+	defer conn.Close()
+
 	cn := client.NewRpcClient(ws.ProcessName, ws.Uuid, ws.Conn, conn)
 	if err = cn.Send(); err != nil {
 		return err

@@ -188,6 +188,8 @@ func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err e
 		return
 	}
 
+	log.Printf("%s %s send ok", file, m)
+
 	return
 }
 

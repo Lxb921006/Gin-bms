@@ -13,7 +13,7 @@ import (
 type AssetsListForm struct {
 	Ip      string `form:"ip,omitempty" json:"ip"`
 	Project string `form:"project,omitempty" json:"project"`
-	Page    int    `form:"page" validate:"min=1" binding:"required"`
+	Page    int    `form:"page" json:"page" validate:"min=1" binding:"required"`
 }
 
 func (a *AssetsListForm) List(ctx *gin.Context) (data *service.Paginate, err error) {
