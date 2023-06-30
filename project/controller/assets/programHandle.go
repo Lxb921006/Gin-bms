@@ -1,23 +1,15 @@
 package assets
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
-	pb "github.com/Lxb921006/Gin-bms/project/command/command"
 	"github.com/Lxb921006/Gin-bms/project/dao"
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/Lxb921006/Gin-bms/project/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"io"
-	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 )
 
@@ -48,7 +40,7 @@ func (apf *RunProgramApiForm) Run(ctx *gin.Context) (err error) {
 		return
 	}
 
-	cy := utils.NewCelery()
+	cy := utils.NewProgramAsyncRunCelery()
 	cy.Task(apf)
 	close(cy.Works)
 
@@ -143,103 +135,16 @@ func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err e
 	}
 
 	files := form.File["file"]
-	ips := form.Value["ips"]
 
 	if len(files) == 0 {
 		return md5, errors.New("上传失败")
 	}
-
-	var fileMd5 = make(map[string]string)
 
 	for _, file := range files {
 		fullFile := filepath.Join("C:\\Users\\Administrator\\Desktop\\update", file.Filename)
 		if err = ctx.SaveUploadedFile(file, fullFile); err != nil {
 			return
 		}
-
-		for _, ip := range ips {
-			wg.Add(1)
-			go func(ip string) {
-				if err = u.SendFileToBackEnd(ip, fullFile); err != nil {
-					return
-				}
-			}(ip)
-		}
-	}
-
-	go func() {
-		wg.Wait()
-		close(u.resChan)
-	}()
-
-	for data := range u.resChan {
-		fd := strings.Split(data, "|")
-		//log.Println(fd)
-		fileMd5[fd[0]] = fd[1]
-	}
-
-	md5 = fileMd5
-
-	return
-}
-
-func (u *UploadForm) SendFileToBackEnd(ip, file string) (err error) {
-	defer wg.Done()
-
-	server := fmt.Sprintf("%s:12306", ip)
-
-	conn, err := grpc.Dial(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return
-	}
-
-	defer conn.Close()
-
-	c := pb.NewFileTransferServiceClient(conn)
-
-	stream, err := c.SendFile(context.Background())
-
-	if err != nil {
-		return
-	}
-
-	buffer := make([]byte, 8092)
-
-	f, err := os.Open(file)
-	if err != nil {
-		return
-	}
-
-	defer f.Close()
-
-	for {
-		b, err := f.Read(buffer)
-		if err == io.EOF {
-			break
-		}
-
-		if b == 0 {
-			break
-		}
-
-		if err = stream.Send(&pb.FileMessage{Byte: buffer[:b], Name: filepath.Base(file)}); err != nil {
-			return err
-		}
-	}
-
-	stream.CloseSend()
-
-	for {
-		resp, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-
-		if err != nil {
-			return err
-		}
-
-		u.resChan <- ip + "-" + resp.GetName()
 	}
 
 	return

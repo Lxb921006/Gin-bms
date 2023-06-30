@@ -5,6 +5,7 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"log"
 	"net/http"
 )
 
@@ -24,7 +25,6 @@ func RunProgramWsController(ctx *gin.Context) {
 
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		fmt.Println("Failed to set websocket upgrade:", err)
 		return
 	}
 
@@ -40,7 +40,7 @@ func RunProgramWsController(ctx *gin.Context) {
 	}
 }
 
-func SyncFileWsController(ctx *gin.Context) {
+func SyncFilePassWsController(ctx *gin.Context) {
 	var upGrader = websocket.Upgrader{
 		ReadBufferSize:  ReadBufferSize,
 		WriteBufferSize: WriteBufferSize,
@@ -51,11 +51,19 @@ func SyncFileWsController(ctx *gin.Context) {
 
 	conn, err := upGrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		fmt.Println("Failed to set websocket upgrade:", err)
+		log.Println("Failed to set websocket upgrade:", err)
 		return
 	}
 
 	defer conn.Close()
+
+	ws := service.NewSendFileWs(conn)
+	if err = ws.Send(); err != nil {
+		if err = ws.Conn.WriteMessage(1, []byte(fmt.Sprintf("%s", err.Error()))); err != nil {
+			return
+		}
+		return
+	}
 
 }
 

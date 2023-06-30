@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"sync"
 )
 
 type RpcClient struct {
@@ -156,24 +157,55 @@ func NewRpcClient(name, uuid string, ws *websocket.Conn, rc *grpc.ClientConn) *R
 
 // 分发文件
 type SyncFileRpcClient struct {
-	Ip      string
-	File    string
+	Ip      []string
+	File    []string
 	RpcConn *grpc.ClientConn
 	WsConn  *websocket.Conn
 	ctx     context.Context
+	wg      sync.WaitGroup
+	resChan chan string
 }
 
-func NewSyncFileRpcClient(ip, file string, ws *websocket.Conn, rc *grpc.ClientConn) *SyncFileRpcClient {
+func NewSyncFileRpcClient(ip, file []string, ws *websocket.Conn) *SyncFileRpcClient {
 	return &SyncFileRpcClient{
 		Ip:      ip,
 		File:    file,
 		WsConn:  ws,
-		RpcConn: rc,
+		resChan: make(chan string),
 	}
 }
 
-func (sfrc *SyncFileRpcClient) Send() (err error) {
-	server := fmt.Sprintf("%s:12306", sfrc.Ip)
+func (sfrc *SyncFileRpcClient) Run() (err error) {
+	for _, file := range sfrc.File {
+		for _, ip := range sfrc.Ip {
+			sfrc.wg.Add(1)
+			go func(ip, file string) {
+				file = filepath.Join("C:\\Users\\Administrator\\Desktop\\update", file)
+				if err = sfrc.Send(ip, file); err != nil {
+					return
+				}
+			}(ip, file)
+
+		}
+	}
+
+	go func() {
+		sfrc.wg.Wait()
+		close(sfrc.resChan)
+	}()
+
+	for data := range sfrc.resChan {
+		if err = sfrc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", data))); err != nil {
+			return err
+		}
+	}
+
+	return
+}
+
+func (sfrc *SyncFileRpcClient) Send(ip, file string) (err error) {
+	defer sfrc.wg.Done()
+	server := fmt.Sprintf("%s:12306", ip)
 
 	conn, err := grpc.Dial(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -192,7 +224,7 @@ func (sfrc *SyncFileRpcClient) Send() (err error) {
 
 	buffer := make([]byte, 8092)
 
-	f, err := os.Open(sfrc.File)
+	f, err := os.Open(file)
 	if err != nil {
 		return
 	}
@@ -209,7 +241,7 @@ func (sfrc *SyncFileRpcClient) Send() (err error) {
 			break
 		}
 
-		if err = stream.Send(&pb.FileMessage{Byte: buffer[:b], Name: filepath.Base(sfrc.File)}); err != nil {
+		if err = stream.Send(&pb.FileMessage{Byte: buffer[:b], Name: filepath.Base(file)}); err != nil {
 			return err
 		}
 	}
@@ -226,9 +258,7 @@ func (sfrc *SyncFileRpcClient) Send() (err error) {
 			return err
 		}
 
-		if err = sfrc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.GetName()))); err != nil {
-			return err
-		}
+		sfrc.resChan <- ip + "-" + resp.GetName()
 	}
 
 	return

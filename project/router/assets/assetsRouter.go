@@ -9,6 +9,7 @@ func AssetsRouter(r *gin.Engine) {
 	assets := r.Group("/assets")
 	{
 		assets.GET("/ws", ac.RunProgramWsController)
+		assets.GET("/file/ws", ac.SyncFilePassWsController)
 		assets.GET("/process/status", ac.GetMissionStatusController)
 		assets.GET("/process/update/list", ac.ProgramUpdateListController)
 		assets.GET("/list", ac.AssetsListController)

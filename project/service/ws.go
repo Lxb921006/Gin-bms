@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 type Ws struct {
@@ -17,15 +16,20 @@ type Ws struct {
 	Uuid        string          `json:"uuid"`
 }
 
+func NewWs(conn *websocket.Conn) *Ws {
+	return &Ws{
+		Conn: conn,
+	}
+}
+
 func (ws *Ws) Run() (err error) {
 	_, message, err := ws.Conn.ReadMessage()
 
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
-	if err = ws.Parse(message); err != nil {
+	if err = ParseJsonToStruct(message, ws); err != nil {
 		return
 	}
 
@@ -53,16 +57,40 @@ func (ws *Ws) Send() (err error) {
 	return
 }
 
-func (ws *Ws) Parse(data []byte) (err error) {
-	if err = json.Unmarshal(data, &ws); err != nil {
+type SendFileWs struct {
+	Conn *websocket.Conn `json:"-"`
+	Ip   []string        `json:"ip"`
+	File []string        `json:"file"`
+}
+
+func NewSendFileWs(conn *websocket.Conn) *SendFileWs {
+	return &SendFileWs{
+		Conn: conn,
+	}
+}
+
+func (sfw *SendFileWs) Send() (err error) {
+	_, message, err := sfw.Conn.ReadMessage()
+	if err != nil {
+		return
+	}
+
+	if err = ParseJsonToStruct(message, sfw); err != nil {
+		return
+	}
+
+	cn := client.NewSyncFileRpcClient(sfw.Ip, sfw.File, sfw.Conn)
+	if err = cn.Run(); err != nil {
 		return
 	}
 
 	return
 }
 
-func NewWs(Conn *websocket.Conn) *Ws {
-	return &Ws{
-		Conn: Conn,
+func ParseJsonToStruct(data []byte, ws interface{}) (err error) {
+	if err = json.Unmarshal(data, &ws); err != nil {
+		return
 	}
+
+	return
 }

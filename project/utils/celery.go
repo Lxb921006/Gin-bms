@@ -10,15 +10,15 @@ import (
 	"log"
 )
 
-type Celery struct {
+type ProgramAsyncRunCelery struct {
 	Works chan api.CeleryInterface
 }
 
-func NewCelery() *Celery {
+func NewProgramAsyncRunCelery() *ProgramAsyncRunCelery {
 	var aprm model.AssetsProcessUpdateRecordModel
 	var dataModel = make(map[string]interface{})
 
-	c := &Celery{
+	c := &ProgramAsyncRunCelery{
 		Works: make(chan api.CeleryInterface),
 	}
 
@@ -31,7 +31,7 @@ func NewCelery() *Celery {
 			data, err := w.Data()
 			dataModel["uuid"] = data["uuid"].(string)
 			dataModel["status"] = 400
-			
+
 			if err != nil {
 				log.Println("获取grpc参数失败: ", err)
 				return
@@ -65,6 +65,6 @@ func NewCelery() *Celery {
 	return c
 }
 
-func (c *Celery) Task(task api.CeleryInterface) {
+func (c *ProgramAsyncRunCelery) Task(task api.CeleryInterface) {
 	c.Works <- task
 }
