@@ -169,6 +169,7 @@ func AssetsListController(ctx *gin.Context) {
 		"data":     data.ModelSlice,
 		"total":    data.Total,
 		"pageSize": data.PageSize,
+		"config":   NewProgramConfig(),
 		"code":     10000,
 	})
 }

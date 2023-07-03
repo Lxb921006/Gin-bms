@@ -139,8 +139,6 @@ func (s *server) JavaReload(req *pb.StreamRequest, stream pb.StreamUpdateProcess
 }
 
 func (s *server) SendFile(stream pb.FileTransferService_SendFileServer) (err error) {
-	log.Println("rec file")
-
 	if err = s.ProcessMsg(stream); err != nil {
 		log.Println(err)
 	}
@@ -160,6 +158,7 @@ func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err e
 		}
 
 		if file == "" {
+			log.Println("rec file >>>", resp.GetName())
 			file = filepath.Join(path, resp.GetName())
 		}
 
