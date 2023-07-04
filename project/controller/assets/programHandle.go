@@ -10,10 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"path/filepath"
-	"sync"
 )
-
-var wg sync.WaitGroup
 
 type RunProgramApiForm struct {
 	Ip         string `form:"ip" json:"ip" gorm:"not null" binding:"required"`

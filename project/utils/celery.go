@@ -37,8 +37,7 @@ func NewProgramAsyncRunCelery() *ProgramAsyncRunCelery {
 				return
 			}
 
-			server := fmt.Sprintf("%s:12306", data["ip"].(string))
-			conn, err := grpc.Dial(server, grpc.WithTransportCredentials(insecure.NewCredentials()))
+			conn, err := grpc.Dial(fmt.Sprintf("%s:12306", data["ip"].(string)), grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				if err = aprm.Update(dataModel); err != nil {
 					log.Println("更新失败-connect: ", err)

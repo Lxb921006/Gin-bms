@@ -30,7 +30,7 @@ func (WhileUrls) WhileList(url string) bool {
 }
 
 func (WhileUrls) OperateWhileList(url string) bool {
-	flag := false
+	var flag bool
 	wls := []string{
 		"/perms/list",
 		"/role/list",
@@ -50,7 +50,7 @@ func (WhileUrls) OperateWhileList(url string) bool {
 	}
 
 	if !flag {
-		return flag
+		return false
 	}
 
 	return true
