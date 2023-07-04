@@ -8,7 +8,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-//资产列表的crud
+//资产列表的crud-1
 
 type AssetsListForm struct {
 	Ip      string `form:"ip,omitempty" json:"ip"`
