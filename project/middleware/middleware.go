@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// 中间件
 // 允许跨域访问
 func AllowCos() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
