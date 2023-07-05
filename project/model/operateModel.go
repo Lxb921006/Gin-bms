@@ -1,12 +1,13 @@
 package model
 
 import (
+	"bytes"
+	"io"
 	"time"
 
 	"github.com/Lxb921006/Gin-bms/project/dao"
 	"github.com/Lxb921006/Gin-bms/project/service"
 	"github.com/gin-gonic/gin"
-
 	"gorm.io/gorm"
 )
 
@@ -56,7 +57,27 @@ func (o *OperateLog) OperateLogListByDate(page int, op OperateLog) (data *servic
 }
 
 func (o *OperateLog) AddOperateLog(ctx *gin.Context) (err error) {
-	o.Url = ctx.Request.URL.Path
+	b, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		return
+	}
+
+	// 将其放入到缓冲区缓存
+	buf := bytes.NewBuffer(b)
+
+	// 保存在resp变量
+	resp := buf.Bytes()
+
+	buf2 := bytes.NewBuffer(resp)
+	rb := io.NopCloser(buf2)
+
+	// 读取了ctx.Request.Body需要再放回去给后续的函数用
+	ctx.Request.Body = rb
+
+	// 重置缓冲区
+	buf.Reset()
+
+	o.Url = ctx.Request.URL.Path + ", " + string(resp)
 	o.Operator = ctx.Query("user")
 	o.Ip = ctx.RemoteIP()
 

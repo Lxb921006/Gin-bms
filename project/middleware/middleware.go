@@ -6,7 +6,6 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/dao"
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"github.com/Lxb921006/Gin-bms/project/service"
-
 	"github.com/gin-gonic/gin"
 )
 

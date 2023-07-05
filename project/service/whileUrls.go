@@ -12,8 +12,6 @@ func (WhileUrls) WhileList(url string) bool {
 		"/login",
 		"/logout",
 		"/galogin",
-		//"/assets/ws",
-		//"/assets/api",
 	}
 
 	for i := 0; i < len(wls); i++ {
@@ -41,6 +39,7 @@ func (WhileUrls) OperateWhileList(url string) bool {
 		"/user/getinfobyname",
 		"/assets/list",
 		"/assets/process/update/list",
+		"/log/list",
 	}
 
 	for i := 0; i < len(wls); i++ {
