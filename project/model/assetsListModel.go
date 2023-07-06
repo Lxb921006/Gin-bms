@@ -13,7 +13,7 @@ type AssetsModel struct {
 	Project  string    `json:"project" gorm:"not null"`
 	Status   string    `json:"status" gorm:"default:100"`
 	Operator string    `json:"operator" gorm:"default:lxb"`
-	Start    time.Time `json:"start" gorm:"default:CURRENT_TIMESTAMP;nullable"`
+	Start    time.Time `json:"start" gorm:"not null"`
 }
 
 func (o *AssetsModel) List(page int, am AssetsModel) (data *service.Paginate, err error) {
@@ -59,10 +59,15 @@ func (o *AssetsModel) Del(ip []string) (err error) {
 	return tx.Commit().Error
 }
 
-func (o *AssetsModel) BeforeSave(tx *gorm.DB) (err error) {
-	if o.Start.IsZero() {
-		o.Start = time.Now()
+func (o *AssetsModel) Modify(data map[string]interface{}) (err error) {
+	if err = dao.DB.Model(o).Where("id = ?", data["id"].(int64)).Updates(data).Error; err != nil {
+		return
 	}
+	return
+}
+
+func (o *AssetsModel) BeforeSave(tx *gorm.DB) (err error) {
+	o.Start = time.Now()
 
 	return
 }

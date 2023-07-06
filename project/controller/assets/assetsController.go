@@ -185,7 +185,23 @@ func AssetsCreateController(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "创建成功",
+		"message": "创建完成",
+		"code":    10000,
+	})
+}
+
+func AssetsModifyController(ctx *gin.Context) {
+	var amf AssetsModifyForm
+	if err := amf.Modify(ctx); err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": err.Error(),
+			"code":    10001,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "修改完成",
 		"code":    10000,
 	})
 }

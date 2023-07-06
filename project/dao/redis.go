@@ -67,7 +67,7 @@ func (r *RedisDb) RquestVerify(user, token string) (err error) {
 
 func (r *RedisDb) RegisterUserInfo(user string) (t string, err error) {
 	token := r.HashToken(user)
-	_, err = r.pool.Set(user, token, time.Second*86400).Result()
+	_, err = r.pool.Set(user, token, time.Second*259200).Result()
 	if err != nil {
 		return
 	}

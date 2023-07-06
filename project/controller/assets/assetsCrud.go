@@ -84,3 +84,27 @@ func (a *AssetsDelForm) Del(ctx *gin.Context) (err error) {
 
 	return
 }
+
+type AssetsModifyForm struct {
+	Id      int64  `form:"id" json:"id"`
+	Ip      string `form:"ip" json:"ip"`
+	Project string `form:"project" json:"project"`
+}
+
+func (aef *AssetsModifyForm) Modify(ctx *gin.Context) (err error) {
+	var am model.AssetsModel
+	var data = make(map[string]interface{})
+	if err = ctx.ShouldBind(aef); err != nil {
+		return
+	}
+
+	data["id"] = aef.Id
+	data["ip"] = aef.Ip
+	data["project"] = aef.Project
+
+	if err = am.Modify(data); err != nil {
+		return
+	}
+
+	return
+}
