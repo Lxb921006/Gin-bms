@@ -13,7 +13,7 @@ import (
 
 type OperateLog struct {
 	gorm.Model
-	Url      string    `json:"url" gorm:"not null"`
+	Url      string    `json:"url" gorm:"type:text;not null"`
 	Operator string    `json:"operator" gorm:"not null"`
 	Ip       string    `json:"ip" gorm:"not null"`
 	Start    time.Time `json:"start" gorm:"-"`

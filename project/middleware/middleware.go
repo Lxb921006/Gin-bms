@@ -38,7 +38,7 @@ func TokenVerify() gin.HandlerFunc {
 		token := ctx.Query("token")
 		user := ctx.Query("user")
 		if token == "" || user == "" {
-			ctx.JSON(http.StatusBadGateway, gin.H{
+			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": "非法请求, 参数缺失",
 			})
 			ctx.Abort()
@@ -74,7 +74,7 @@ func PermsVerify() gin.HandlerFunc {
 			Select("permissions.path").Find(&p).Error
 
 		if err != nil {
-			ctx.JSON(http.StatusBadGateway, gin.H{
+			ctx.JSON(http.StatusForbidden, gin.H{
 				"message": err.Error(),
 			})
 			ctx.Abort()
@@ -107,7 +107,7 @@ func PermsVerify() gin.HandlerFunc {
 func Visitlimit() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if err := dao.Rds.Visitlimit(ctx.Request.Host); err != nil {
-			ctx.JSON(http.StatusBadGateway, gin.H{
+			ctx.JSON(http.StatusBadRequest, gin.H{
 				"message": err.Error(),
 			})
 			ctx.Abort()
@@ -126,6 +126,9 @@ func OperateRecord() gin.HandlerFunc {
 		}
 
 		if err := op.AddOperateLog(ctx); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{
+				"message": err.Error(),
+			})
 			ctx.Abort()
 		}
 	}
