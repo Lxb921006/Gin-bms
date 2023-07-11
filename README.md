@@ -7,7 +7,7 @@
 
 # 功能
 1.用户管理  
-2.权限管理(精确到前端的按钮)  
+2.权限管理(按钮级别控制)  
 3.服务器管理(批量更新程序如jar等, 实时更新进度, 实时更新日志, 批量分发文件并md5校验)[点击直达代码片段](https://github.com/Lxb921006/Gin-bms/tree/dev/project/controller/assets)  
 4.操作日志  
 
