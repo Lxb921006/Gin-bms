@@ -2,7 +2,7 @@
 基于Gin+vue开发服务器管理系统，简单易懂，易于扩展
 
 # 技术栈
-后端：gin1.8.1, golang 1.20, grpc, mysql5.7,redis7.0,异步(celery),docker等
+后端：gin1.8.1, golang 1.20, grpc, mysql5.7,redis7.0,异步(celery),docker等  
 前端：vue2.0 elementUI等
 
 # 功能
