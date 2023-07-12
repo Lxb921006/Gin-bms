@@ -15,7 +15,6 @@ import (
 var (
 	RdPool *redis.Client
 	Rds    *RedisDb
-	lock   sync.Mutex
 )
 
 // 初始化redis连接池
@@ -42,12 +41,14 @@ type Md struct {
 type RedisDb struct {
 	pool *redis.Client
 	md   map[string]Md
+	lock *sync.Mutex
 }
 
 func NewRedisDb(pool *redis.Client, md map[string]Md) *RedisDb {
 	return &RedisDb{
 		pool: pool,
 		md:   md,
+		lock: &sync.Mutex{},
 	}
 }
 
@@ -101,8 +102,8 @@ func (r *RedisDb) ClearToken(user string) (err error) {
 
 // 很简单很简单的限流功能，每秒只能接收20次访问，超过5次返回502并需要等待10秒后才能访问
 func (r *RedisDb) Visitlimit(host string) (err error) {
-	lock.Lock()
-	defer lock.Unlock()
+	r.lock.Lock()
+	defer r.lock.Unlock()
 
 	//每秒最多请求数
 	var limit uint = 20

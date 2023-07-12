@@ -84,6 +84,7 @@ func RunProgramApiController(ctx *gin.Context) {
 
 }
 
+// GetMissionStatusController 废弃
 func GetMissionStatusController(ctx *gin.Context) {
 	var ps GetMissionStatusForm
 	data, err := ps.Get(ctx)
