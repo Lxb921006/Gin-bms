@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"path/filepath"
+	"strings"
 )
 
 type RunProgramApiForm struct {
@@ -126,6 +127,9 @@ func NewUploadForm() *UploadForm {
 }
 
 func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err error) {
+	var addLog model.OperateLog
+	var record = make(map[string]string)
+	var fileList = make([]string, 0)
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		return
@@ -142,6 +146,16 @@ func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err e
 		if err = ctx.SaveUploadedFile(file, fullFile); err != nil {
 			return
 		}
+
+		fileList = append(fileList, file.Filename)
+	}
+
+	record["user"] = ctx.Query("user")
+	record["url"] = ctx.Request.URL.Path + ", " + strings.Join(fileList, ",")
+	record["ip"] = ctx.RemoteIP()
+
+	if err = addLog.AloneAddOperateLog(record); err != nil {
+		return
 	}
 
 	return

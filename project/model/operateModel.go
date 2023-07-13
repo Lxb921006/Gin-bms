@@ -57,6 +57,9 @@ func (o *OperateLog) OperateLogListByDate(page int, op OperateLog) (data *servic
 }
 
 func (o *OperateLog) AddOperateLog(ctx *gin.Context) (err error) {
+	if ctx.Request.URL.Path == "/assets/upload" {
+		return
+	}
 	b, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
 		return
@@ -85,4 +88,16 @@ func (o *OperateLog) AddOperateLog(ctx *gin.Context) (err error) {
 		return
 	}
 	return
+}
+
+func (o *OperateLog) AloneAddOperateLog(data map[string]string) error {
+	o.Url = data["url"]
+	o.Operator = data["user"]
+	o.Ip = data["ip"]
+
+	if err := dao.DB.Create(o).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

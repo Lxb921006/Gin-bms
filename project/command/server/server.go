@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	pb "github.com/Lxb921006/Gin-bms/project/command/command"
+	"github.com/Lxb921006/Gin-bms/project/utils"
 	"google.golang.org/grpc"
 	"io"
 	"log"
@@ -169,22 +170,26 @@ func (s *server) ProcessMsg(stream pb.FileTransferService_SendFileServer) (err e
 	if err != nil {
 		fw, err := os.Create(file)
 		if err != nil {
-			return err
+			utils.Error(err.Error())
 		}
 		defer fw.Close()
 
+		nw := bufio.NewWriter(fw)
+
 		for _, chunk := range chunks {
-			_, err := fw.WriteString(string(chunk))
+			_, err := nw.Write(chunk)
 			if err != nil {
-				return err
+				utils.Error(err.Error())
 			}
 		}
+
+		nw.Flush()
 	}
 
 	m, _ := s.FileMd5(file)
 
 	if err = stream.Send(&pb.FileMessage{Byte: []byte("md5"), Name: filepath.Base(file) + "|" + m}); err != nil {
-		return
+		utils.Error(err.Error())
 	}
 
 	log.Printf("%s %s send ok", file, m)
@@ -215,6 +220,9 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
+	utils.SetLogFile("./rpc_file.log")
+	utils.SetLogLevel(utils.ErrorLevel)
 
 	s := grpc.NewServer()
 
