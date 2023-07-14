@@ -99,7 +99,7 @@ func DeleteUser(ctx *gin.Context) {
 	vd := NewValidateData(validate)
 	if err := vd.ValidateStruct(ud); err != nil {
 		ctx.JSON(http.StatusOK, gin.H{
-			"message": fmt.Sprintf("该用户不能删除, 他是大哥, errMsg=%v", err.Error()),
+			"message": "该用户不能删除, 他是大哥",
 			"code":    60002,
 		})
 		return
