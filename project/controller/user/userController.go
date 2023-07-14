@@ -33,7 +33,7 @@ type UpdateUserForm struct {
 }
 
 type DelUserByIdJson struct {
-	Uid []uint `form:"uid" json:"uid" binding:"required"`
+	Uid []uint `form:"uid" json:"uid" binding:"required" validate:"contains=1"` //我是super user, 防止把自己给误删
 }
 
 type GetUserByNameQuery struct {
@@ -91,6 +91,16 @@ func DeleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
 			"code":    60004,
+		})
+		return
+	}
+
+	validate := validator.New()
+	vd := NewValidateData(validate)
+	if err := vd.ValidateStruct(ud); err != nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"message": fmt.Sprintf("该用户不能删除, 他是大哥, errMsg=%v", err.Error()),
+			"code":    60002,
 		})
 		return
 	}
