@@ -7,6 +7,7 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"runtime"
 )
 
 type ProgramAsyncRunCelery struct {
@@ -21,28 +22,34 @@ func NewProgramAsyncRunCelery() *ProgramAsyncRunCelery {
 		Works: make(chan api.CeleryInterface),
 	}
 
-	SetLogFile("C:\\Users\\Administrator\\Desktop\\celery.log")
+	switch os := runtime.GOOS; os {
+	case "linux":
+		SetLogFile("/opt/celery.log")
+	case "windows":
+		SetLogFile("C:\\Users\\Administrator\\Desktop\\celery.log")
+	default:
+		SetLogFile("./celery.log")
+	}
+
 	SetLogLevel(ErrorLevel)
 
 	go func() {
 		for w := range c.Works {
 			data, err := w.Data()
-			dataModel["uuid"] = data["uuid"].(string)
-			dataModel["status"] = 400
-
 			if err != nil {
 				Error("获取grpc参数失败: ", err)
 				return
 			}
+
+			dataModel["uuid"] = data["uuid"].(string)
+			dataModel["status"] = 400
 
 			conn, err := grpc.Dial(fmt.Sprintf("%s:12306", data["ip"].(string)), grpc.WithTransportCredentials(insecure.NewCredentials()))
 			if err != nil {
 				if err = aprm.Update(dataModel); err != nil {
 					Error("更新失败-connect: ", err)
 				}
-
 				Error("连接grpc失败: ", err)
-
 				return
 			}
 

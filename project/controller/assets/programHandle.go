@@ -3,6 +3,7 @@ package assets
 import (
 	"encoding/json"
 	"errors"
+	"github.com/Lxb921006/Gin-bms/project/command/rpcConfig"
 	"github.com/Lxb921006/Gin-bms/project/dao"
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"github.com/Lxb921006/Gin-bms/project/service"
@@ -142,7 +143,7 @@ func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err e
 	}
 
 	for _, file := range files {
-		fullFile := filepath.Join("C:\\Users\\Administrator\\Desktop\\update", file.Filename)
+		fullFile := filepath.Join(rpcConfig.UploadPath, file.Filename)
 		if err = ctx.SaveUploadedFile(file, fullFile); err != nil {
 			return
 		}

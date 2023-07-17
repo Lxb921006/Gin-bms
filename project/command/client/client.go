@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	pb "github.com/Lxb921006/Gin-bms/project/command/command"
+	"github.com/Lxb921006/Gin-bms/project/command/rpcConfig"
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -21,6 +22,15 @@ type RpcClient struct {
 	RpcConn *grpc.ClientConn
 	WsConn  *websocket.Conn
 	ctx     context.Context
+}
+
+func NewRpcClient(name, uuid string, ws *websocket.Conn, rc *grpc.ClientConn) *RpcClient {
+	return &RpcClient{
+		Name:    name,
+		Uuid:    uuid,
+		WsConn:  ws,
+		RpcConn: rc,
+	}
 }
 
 func (rc *RpcClient) Send() (err error) {
@@ -139,20 +149,12 @@ func (rc *RpcClient) JavaUpdateLog() (err error) {
 			if err = rc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", resp.Message))); err != nil {
 				return err
 			}
+
 		}
 
 	}
 
 	return
-}
-
-func NewRpcClient(name, uuid string, ws *websocket.Conn, rc *grpc.ClientConn) *RpcClient {
-	return &RpcClient{
-		Name:    name,
-		Uuid:    uuid,
-		WsConn:  ws,
-		RpcConn: rc,
-	}
 }
 
 // 分发文件
@@ -180,12 +182,13 @@ func (sfrc *SyncFileRpcClient) Run() (err error) {
 		for _, ip := range sfrc.Ip {
 			sfrc.wg.Add(1)
 			go func(ip, file string) {
-				file = filepath.Join("C:\\Users\\Administrator\\Desktop\\update", file)
+				file = filepath.Join(rpcConfig.UploadPath, file)
 				if err = sfrc.Send(ip, file); err != nil {
-					return
+					if err = sfrc.ReturnWsData(fmt.Sprintf("%s\n", err.Error())); err != nil {
+						return
+					}
 				}
 			}(ip, file)
-
 		}
 	}
 
@@ -195,11 +198,19 @@ func (sfrc *SyncFileRpcClient) Run() (err error) {
 	}()
 
 	for data := range sfrc.resChan {
-		if err = sfrc.WsConn.WriteMessage(1, []byte(fmt.Sprintf("%s\n", data))); err != nil {
-			return err
+		if err = sfrc.ReturnWsData(fmt.Sprintf("%s\n", data)); err != nil {
+			return
 		}
+
 	}
 
+	return
+}
+
+func (sfrc *SyncFileRpcClient) ReturnWsData(data string) (err error) {
+	if err = sfrc.WsConn.WriteMessage(1, []byte(data)); err != nil {
+		return
+	}
 	return
 }
 
