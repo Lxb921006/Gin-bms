@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/Lxb921006/Gin-bms/project/config"
 
 	"gorm.io/gorm"
 )
@@ -23,7 +24,8 @@ func NewPaginate() *Paginate {
 
 func (p *Paginate) GetPageData(page int, sql *gorm.DB) (pg *Paginate, err error) {
 	var total int64
-	size := 10 //这里是写死了每页最多展示的数据
+	//这里是写死了每页最多展示的数据
+	var size = config.PageSize
 	if err = sql.Count(&total).Error; err != nil {
 		return
 	}

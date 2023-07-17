@@ -57,6 +57,7 @@ func (o *OperateLog) OperateLogListByDate(page int, op OperateLog) (data *servic
 }
 
 func (o *OperateLog) AddOperateLog(ctx *gin.Context) (err error) {
+	// 没办法, 上传的不给这样操作
 	if ctx.Request.URL.Path == "/assets/upload" {
 		return
 	}

@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"github.com/Lxb921006/Gin-bms/project/config"
 	"strconv"
 	"sync"
 	"time"
@@ -105,9 +106,6 @@ func (r *RedisDb) Visitlimit(host string) (err error) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 
-	//每秒最多请求数
-	var limit uint = 20
-
 	mdd := Md{}
 	ut := uint64(time.Now().Unix())
 
@@ -127,7 +125,7 @@ func (r *RedisDb) Visitlimit(host string) (err error) {
 		return
 	}
 
-	if vd.Rtime >= ut && vd.Count > limit {
+	if vd.Rtime >= ut && vd.Count > config.Frequency {
 		vd.Count = 1
 		vd.Wait = ut + 10
 		r.md["visit_"+host] = vd
