@@ -7,7 +7,6 @@ import (
 	"github.com/Lxb921006/Gin-bms/project/model"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"runtime"
 )
 
 type ProgramAsyncRunCelery struct {
@@ -22,15 +21,7 @@ func NewProgramAsyncRunCelery() *ProgramAsyncRunCelery {
 		Works: make(chan api.CeleryInterface),
 	}
 
-	switch os := runtime.GOOS; os {
-	case "linux":
-		SetLogFile("/opt/celery.log")
-	case "windows":
-		SetLogFile("C:\\Users\\Administrator\\Desktop\\celery.log")
-	default:
-		SetLogFile("./celery.log")
-	}
-
+	SetLogFile(CeleryLogPath)
 	SetLogLevel(ErrorLevel)
 
 	go func() {
