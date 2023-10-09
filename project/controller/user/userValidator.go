@@ -15,6 +15,21 @@ func (v *ValidateData) ValidateStruct(s interface{}) (err error) {
 	return
 }
 
+func (v *ValidateData) ValidateCheckForAdminUid(fl validator.FieldLevel) bool {
+	uidList, ok := fl.Field().Interface().([]uint)
+	if !ok {
+		return false
+	}
+	// 不能把我删了, 我得有最高权限
+	for _, uid := range uidList {
+		if uid == 26 {
+			return false
+		}
+	}
+
+	return true
+}
+
 func (v *ValidateData) ValidatorNumber(fl validator.FieldLevel) bool {
 	num := fl.Field().Interface()
 	switch num := num.(type) {

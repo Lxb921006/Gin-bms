@@ -32,7 +32,7 @@ func (u *User) AddUser(d User, rid uint) (err error) {
 	return
 }
 
-//分配角色
+// 分配角色
 func (u *User) AssignRoles(name string, rid uint) (err error) {
 	var role Role
 
@@ -101,7 +101,7 @@ func (u *User) GetUserByName(name string) (ud User, err error) {
 	return
 }
 
-//单表中过滤出row
+// 单表中过滤出row
 func (u *User) GetUserByPaginate(page int, d User) (ul *service.Paginate, err error) {
 	var us []User
 	sql := dao.DB.Model(u).Where(d).Preload("Role")
@@ -120,11 +120,11 @@ func (u *User) GetUserByPaginate(page int, d User) (ul *service.Paginate, err er
 	return
 }
 
-//通过m2m关系表中过滤出row
-func (u *User) GetUserByMmPaginate(page int, rolename string) (ul *service.Paginate, err error) {
+// 通过m2m关系表中过滤出row
+func (u *User) GetUserByMmPaginate(page int, rolename string, user User) (ul *service.Paginate, err error) {
 	var us []User
 	var uid []uint
-	if err = dao.DB.Preload("Role", Role{RoleName: rolename}).Find(&us).Error; err != nil {
+	if err = dao.DB.Preload("Role", Role{RoleName: rolename}).Where(&user).Find(&us).Error; err != nil {
 		return
 	}
 

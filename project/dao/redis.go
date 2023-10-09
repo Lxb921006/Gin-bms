@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"github.com/Lxb921006/Gin-bms/project/config"
 	"strconv"
 	"sync"
 	"time"
@@ -15,7 +16,6 @@ import (
 var (
 	RdPool *redis.Client
 	Rds    *RedisDb
-	lock   sync.Mutex
 )
 
 // 初始化redis连接池
@@ -42,12 +42,14 @@ type Md struct {
 type RedisDb struct {
 	pool *redis.Client
 	md   map[string]Md
+	lock *sync.Mutex
 }
 
 func NewRedisDb(pool *redis.Client, md map[string]Md) *RedisDb {
 	return &RedisDb{
 		pool: pool,
 		md:   md,
+		lock: &sync.Mutex{},
 	}
 }
 
@@ -67,7 +69,7 @@ func (r *RedisDb) RquestVerify(user, token string) (err error) {
 
 func (r *RedisDb) RegisterUserInfo(user string) (t string, err error) {
 	token := r.HashToken(user)
-	_, err = r.pool.Set(user, token, time.Second*86400).Result()
+	_, err = r.pool.Set(user, token, time.Second*259200).Result()
 	if err != nil {
 		return
 	}
@@ -99,10 +101,10 @@ func (r *RedisDb) ClearToken(user string) (err error) {
 	return
 }
 
-// 很简单很简单的限流功能，每秒只能接收5次访问，超过5次返回502并需要等待10秒后才能访问
+// 很简单很简单的限流功能，每秒只能接收20次访问，超过5次返回502并需要等待10秒后才能访问
 func (r *RedisDb) Visitlimit(host string) (err error) {
-	lock.Lock()
-	defer lock.Unlock()
+	r.lock.Lock()
+	defer r.lock.Unlock()
 
 	mdd := Md{}
 	ut := uint64(time.Now().Unix())
@@ -123,7 +125,7 @@ func (r *RedisDb) Visitlimit(host string) (err error) {
 		return
 	}
 
-	if vd.Rtime >= ut && vd.Count > 5 {
+	if vd.Rtime >= ut && vd.Count > config.Frequency {
 		vd.Count = 1
 		vd.Wait = ut + 10
 		r.md["visit_"+host] = vd
@@ -153,4 +155,32 @@ func (r *RedisDb) HashToken(user string) string {
 	nd := hash.Sum(nil)
 	nnd := hex.EncodeToString(nd)
 	return nnd
+}
+
+func (r *RedisDb) GetProcessStatus() (sm map[string]string, err error) {
+	var data = make(map[string]string, 0)
+
+	running, err := r.pool.HGet("prcessstatus", "running").Result()
+	if err != nil {
+		r.pool.HGet("prcessstatus", "running")
+		return
+	}
+
+	finished, err := r.pool.HGet("prcessstatus", "finished").Result()
+	if err != nil {
+		return
+	}
+
+	failed, err := r.pool.HGet("prcessstatus", "failed").Result()
+	if err != nil {
+		return
+	}
+
+	data["running"] = running
+	data["finished"] = finished
+	data["failed"] = failed
+
+	sm = data
+
+	return
 }

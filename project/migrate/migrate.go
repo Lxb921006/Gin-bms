@@ -12,6 +12,8 @@ func InitTable() {
 		&model.Role{},
 		&model.Permission{},
 		&model.OperateLog{},
+		&model.AssetsModel{},
+		&model.AssetsProcessUpdateRecordModel{},
 	)
 
 	if err != nil {

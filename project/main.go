@@ -14,14 +14,12 @@ func main() {
 	err := dao.InitPoolMysql()
 	if err != nil {
 		log.Fatalf(err.Error())
-		return
 	}
 
 	//初始化redis连接池
 	dao.InitPoolRds(config.RedisConAddre, config.RedisPwd, config.RedisUserDb)
 	if dao.RdPool == nil {
 		log.Fatalf(dao.ErrorRedisConnectFailed.Error())
-		return
 	}
 	dao.Rds = dao.NewRedisDb(dao.RdPool, map[string]dao.Md{})
 
@@ -33,6 +31,5 @@ func main() {
 	err = t.ListenAndServe()
 	if err != nil {
 		log.Fatalf(err.Error())
-		return
 	}
 }
