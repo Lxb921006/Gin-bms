@@ -2,8 +2,8 @@
 基于Gin+vue开发服务器管理系统，简单易懂，易于扩展
 
 # 技术栈
-后端：gin1.9, golang 1.19, gorm, grpc, mysql5.7, redis7.0, 异步(celery),docker等  
-前端：vue2.0 elementUI等[点击直达前端代码](https://github.com/Lxb921006/Vue-bms/tree/dev)
+后端：gin1.9, golang 1.20, gorm, grpc, mysql5.7, redis7.0, docker等  
+前端：vue2.0 elementUI等[点击直达前端代码](https://github.com/Lxb921006/Vue-bms)
 
 # 功能
 1.google MFA码安全校验登录  
