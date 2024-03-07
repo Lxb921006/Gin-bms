@@ -36,6 +36,8 @@ func CopyStruct(src, dst interface{}) (err error) {
 					dstElem.Field(t).SetInt(srcElem.Field(i).Int())
 				case reflect.Int32:
 					dstElem.Field(t).SetInt(srcElem.Field(i).Int())
+				default:
+					panic("unhandled default case")
 				}
 			}
 		}

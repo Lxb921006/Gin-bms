@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/Lxb921006/Gin-bms/project/config"
 	"github.com/Lxb921006/Gin-bms/project/dao"
 	"github.com/Lxb921006/Gin-bms/project/migrate"
 	"github.com/Lxb921006/Gin-bms/project/router/root"
@@ -17,7 +16,7 @@ func main() {
 	}
 
 	//初始化redis连接池
-	dao.InitPoolRds(config.RedisConAddre, config.RedisPwd, config.RedisUserDb)
+	dao.InitPoolRds()
 	if dao.RdPool == nil {
 		log.Fatalf(dao.ErrorRedisConnectFailed.Error())
 	}

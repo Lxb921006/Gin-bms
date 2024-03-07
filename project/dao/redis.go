@@ -19,11 +19,12 @@ var (
 )
 
 // 初始化redis连接池
-func InitPoolRds(addr, pwd string, db int) {
+
+func InitPoolRds() {
 	RdPool = redis.NewClient(&redis.Options{
-		Addr:         addr,
-		DB:           db,
-		Password:     pwd,
+		Addr:         config.RedisConAddre,
+		DB:           config.RedisUserDb,
+		Password:     config.RedisPwd,
 		MinIdleConns: 5,
 		PoolSize:     30,
 		PoolTimeout:  30 * time.Second,
