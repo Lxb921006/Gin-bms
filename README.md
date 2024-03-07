@@ -9,7 +9,7 @@
 1.google MFA码安全校验登录  
 2.用户管理  
 3.权限管理(按钮级别控制)  
-4.服务器管理(批量更新程序如jar等, 实时查看更新进度, 实时查看更新日志, 批量分发文件并返回md5校验, 上百台服务器规范管理毫无压力)[点击直达代码片段](https://github.com/Lxb921006/Gin-bms/tree/dev/project/controller/assets)  
+4.服务器管理(批量更新程序如jar等, 实时查看更新进度, 实时查看更新日志, 批量分发文件并返回md5校验, 上百台服务器规范管理毫无压力)[点击直达代码片段](https://github.com/Lxb921006/Gin-bms/tree/master/project/controller/assets)  
 5.操作日志  
 
 # 演示地址
