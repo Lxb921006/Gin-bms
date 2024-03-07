@@ -19,8 +19,4 @@ password: 123321
 
 # 部分UI展示
 # 部分ui展示
-![user](user.png)  
-![perms](perms.png)  
-![servers](servers.png)
-
-# 希望能跟大佬们学习交流, 虚心接受大佬们指出的问题
+ ![servers](servers.png)  
