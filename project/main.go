@@ -15,7 +15,7 @@ func main() {
 		log.Fatalf(err.Error())
 	}
 
-	//这里初始化数据库表
+	//初始化数据库表
 	err = migrate.InitTable()
 	if err != nil {
 		log.Fatalf(err.Error())
