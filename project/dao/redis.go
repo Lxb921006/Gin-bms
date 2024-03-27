@@ -20,7 +20,7 @@ var (
 
 // 初始化redis连接池
 
-func InitPoolRds() {
+func InitPoolRds() (err error) {
 	RdPool = redis.NewClient(&redis.Options{
 		Addr:         config.RedisConAddre,
 		DB:           config.RedisUserDb,
@@ -32,6 +32,9 @@ func InitPoolRds() {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	})
+
+	_, err = RdPool.Ping().Result()
+	return
 }
 
 type Md struct {

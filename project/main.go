@@ -16,14 +16,21 @@ func main() {
 	}
 
 	//初始化redis连接池
-	dao.InitPoolRds()
+	err = dao.InitPoolRds()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
+
 	if dao.RdPool == nil {
 		log.Fatalf(dao.ErrorRedisConnectFailed.Error())
 	}
 	dao.Rds = dao.NewRedisDb(dao.RdPool, map[string]dao.Md{})
 
 	//这里初始化数据库表
-	migrate.InitTable()
+	err = migrate.InitTable()
+	if err != nil {
+		log.Fatalf(err.Error())
+	}
 
 	//初始化gin并启动
 	t := root.SetupRouter()
