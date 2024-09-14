@@ -156,7 +156,6 @@ func (u *UploadForm) UploadFiles(ctx *gin.Context) (md5 map[string]string, err e
 	record["url"] = ctx.Request.URL.Path + ", " + strings.Join(fileList, ",")
 	record["ip"] = ctx.RemoteIP()
 
-	// 要调用的方法是指针接收者,所以无需实例化结构体
 	if err = addLog.AloneAddOperateLog(record); err != nil {
 		return
 	}
